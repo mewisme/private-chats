@@ -3,8 +3,8 @@ import { ThemeToggle } from '@/components/common/theme-toggle'
 
 export function Header() {
   return (
-    <header className='fixed z-40 w-full items-center justify-center flex mb-4'>
-      <div className='flex items-center justify-between w-full px-4 py-6 max-w-4xl bg-transparent backdrop-blur-md'>
+    <header className='fixed top-0 left-0 right-0 z-40 w-full items-center justify-center flex' style={{ paddingTop: 'var(--safe-area-inset-top)' }}>
+      <div className='flex items-center justify-between w-full px-4 py-2 max-w-4xl backdrop-blur-xl'>
         <Logo draw isMew />
         <ThemeToggle />
       </div>

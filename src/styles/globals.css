@@ -37,6 +37,16 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Safe area insets for iOS compatibility */
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
+  --safe-area-inset-right: env(safe-area-inset-right);
+
+  /* Header height for content spacing - includes safe area and padding */
+  --header-height: calc(6rem + var(--safe-area-inset-top) + 1px);
+  /* py-6 = 3rem top + 3rem bottom + border */
 }
 
 .dark {
@@ -120,5 +130,32 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Header height compensation utility */
+  .pt-header {
+    padding-top: var(--header-height);
+  }
+
+  /* For iOS < 17 and devices that don't support env(), fallback to fixed values */
+  @supports not (padding-top: env(safe-area-inset-top)) {
+    :root {
+      --safe-area-inset-top: 44px;
+      /* Status bar height for older iOS */
+      --safe-area-inset-bottom: 34px;
+      /* Home indicator height */
+      --safe-area-inset-left: 0px;
+      --safe-area-inset-right: 0px;
+    }
+  }
+
+  /* Additional fallback for very old iOS versions */
+  @media screen and (max-width: 767px) {
+    @supports not (padding-top: env(safe-area-inset-top)) {
+      :root {
+        --header-height: 7rem;
+        /* Fixed height for mobile when safe area not supported */
+      }
+    }
   }
 }

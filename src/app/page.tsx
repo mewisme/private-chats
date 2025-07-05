@@ -32,7 +32,7 @@ export default function FindStranger() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-dvh flex items-center justify-center p-4 mt-8 sm:mt-0">
       <Card className="max-w-md w-full">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
