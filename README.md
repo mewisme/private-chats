@@ -1,56 +1,93 @@
-# Next.js + TypeScript + Tailwind CSS + ShadCN-UI
+# Anonymous Chat App Setup Instructions
 
-This project is a modern frontend starter template using **Next.js** (App Router), **TypeScript**, **Tailwind CSS**, and **ShadCN-UI** for building beautiful, accessible, and scalable web applications.
+This is a real-time anonymous 1-on-1 chat application built with Next.js 15, TypeScript, and Firebase Firestore. Features a clean, monochrome design inspired by Vercel's aesthetic.
 
-## 🚀 Features
+## Prerequisites
 
-- ⚡ **Next.js** – Fullstack React framework with SSR, API routes, and App Router
-- 🛠 **TypeScript** – Type-safe JavaScript
-- 🎨 **Tailwind CSS** – Utility-first styling
-- 💎 **ShadCN-UI** – Accessible, customizable components built on Radix UI
+- Node.js 18+ and pnpm
+- Firebase account
 
-## 📦 Installation
+## Firebase Setup
 
-```bash
-npm install
-```
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or select an existing one
+3. Enable Firestore Database:
+   - Go to "Firestore Database" in the sidebar
+   - Click "Create database"
+   - Choose "Start in test mode" (for development)
+   - Select a location
 
-## 🔧 Development
+4. Get your Firebase configuration:
+   - Go to Project Settings (gear icon)
+   - Scroll down to "Your apps" section
+   - Click "Add app" and choose "Web"
+   - Register your app and copy the config
 
-```bash
-npm run dev
-```
-
-Open http://localhost:3000 in your browser.
-
-## 🏗 Production Build
-
-```bash
-npm run build
-npm start
-```
-
-## 🧱 Setup Notes
-
-ShadCN-UI is initialized and ready to use
-
-You can add components using:
+5. Create a `.env.local` file in the root directory with your Firebase config:
 
 ```bash
-npx shadcn@latest add <component>
+NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-auth-domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
 ```
 
-Ensure your theme and paths are configured correctly in:
+## Local Development
 
-[components.json](./components.json)
+1. Install dependencies:
+```bash
+pnpm install
+```
 
-[src/styles/globals.css](./src/styles/globals.css)
+2. Start the development server:
+```bash
+pnpm dev
+```
 
-## 📚 References
+3. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-- [Next.js Docs](https://nextjs.org/docs)
-- [Tailwind CSS Docs](https://tailwindcss.com/docs)
-- [TypeScript Docs](https://www.typescriptlang.org/docs)
-- [ShadCN-UI Docs](https://www.shadcn-vue.com/docs/introduction.html)
+## Usage
 
-Made with ❤️ using the modern React ecosystem.
+1. Click "Find Stranger" on the home page
+2. If someone is waiting, you'll join their room instantly
+3. Otherwise, wait for someone to find you
+4. Start chatting anonymously
+5. Click "Leave Chat" to end the conversation
+
+## Features
+
+- Real-time messaging using Firebase Firestore
+- Anonymous users with persistent client IDs
+- Automatic room matching and cleanup
+- Monochrome design inspired by Vercel's aesthetic
+- Dark mode support with theme toggle
+- Responsive design optimized for all devices
+- Auto-focus input for seamless typing experience
+
+## Design Philosophy
+
+The app follows a clean, monochrome design language:
+- **Pure black and white** for primary elements
+- **Gray tones** for secondary elements and borders
+- **Minimal color usage** except for error states
+- **Clean typography** with proper spacing
+- **Sharp, modern** design language similar to Vercel
+
+
+## Security Notes
+
+- This app uses Firestore in test mode for development
+- For production, set up proper Firestore security rules
+- Consider implementing rate limiting and content moderation
+- No user authentication is used - users are anonymous
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. Verify your Firebase configuration in `.env.local`
+2. Check that Firestore is enabled in your Firebase project
+3. Ensure you're using the correct project ID
+4. Check the browser console for any error messages
