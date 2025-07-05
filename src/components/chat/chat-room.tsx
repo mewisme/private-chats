@@ -1,77 +1,62 @@
-'use client'
+'use client';
 
-import { LogOut, Send } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Dialog, DialogBackdrop, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogTitle } from '../animate-ui/headless/dialog';
+import { LogOut, Send } from 'lucide-react';
+import { Message, listenToMessages, sendMessage } from '@/lib/message';
+import { Room, leaveRoom, listenToRoom } from '@/lib/room';
+import { useEffect, useRef, useState } from 'react';
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { getClientId } from '@/lib/client-id'
-import { listenToMessages, Message, sendMessage } from '@/lib/message'
-import { leaveRoom, listenToRoom,Room } from '@/lib/room'
-
-import { Dialog, DialogBackdrop, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogTitle } from '../animate-ui/headless/dialog'
-import { ChatMessageList } from './chat-message-list'
+import { Button } from '@/components/ui/button';
+import { ChatMessageList } from './chat-message-list';
+import { Input } from '@/components/ui/input';
+import { getClientId } from '@/lib/client-id';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface ChatRoomProps {
   roomId: string;
 }
 
 export default function ChatRoom({ roomId }: ChatRoomProps) {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [newMessage, setNewMessage] = useState('')
-  const [_, setRoom] = useState<Room | null>(null)
-  const [isConnected, setIsConnected] = useState(false)
-  const [isSending, setIsSending] = useState(false)
-  const [isLeaveOpen, setIsLeaveOpen] = useState(false)
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [_, setRoom] = useState<Room | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [isLeaveOpen, setIsLeaveOpen] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const router = useRouter()
-  const clientId = getClientId()
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const clientId = getClientId();
 
   useEffect(() => {
-    let previousParticipantsCount = 0
-
     const unsubRoom = listenToRoom(roomId, (roomData) => {
       if (!roomData) {
-        toast.info('The chat has ended')
-        router.push('/')
-        return
+        toast.info('The chat has ended');
+        router.push('/');
+        return;
       }
+      setRoom(roomData);
+      setIsConnected(roomData.status === 'active' && roomData.participants.length === 2);
+    });
 
-      setRoom(roomData)
-
-      const currentCount = roomData.participants?.length || 0
-      const isNowConnected = roomData.status === 'active' && currentCount === 2
-
-      if (
-        previousParticipantsCount === 1 &&
-        currentCount === 2 &&
-        roomData.participants.includes(clientId)
-      ) {
-        toast.success('Someone joined the chat')
-      }
-
-      previousParticipantsCount = currentCount
-      setIsConnected(isNowConnected)
-    })
+    const unsubMessages = listenToMessages(roomId, setMessages);
 
     return () => {
-      unsubRoom?.()
-    }
-  }, [roomId, clientId, router])
-
-
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [isConnected])
+      unsubRoom?.();
+      unsubMessages?.();
+    };
+  }, [roomId, router]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+    inputRef.current?.focus();
+  }, [isConnected]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     window.addEventListener('beforeunload', handleUnload)
@@ -79,43 +64,43 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     return () => {
       window.removeEventListener('beforeunload', handleUnload)
     }
-  }, [roomId, clientId])
+  }, [roomId, clientId]);
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || isSending) return
+    if (!newMessage.trim() || isSending) return;
 
-    setIsSending(true)
+    setIsSending(true);
     try {
-      await sendMessage(roomId, clientId, newMessage)
-      setNewMessage('')
+      await sendMessage(roomId, clientId, newMessage);
+      setNewMessage('');
     } catch {
-      toast.error('Failed to send message')
+      toast.error('Failed to send message');
     } finally {
-      setIsSending(false)
+      setIsSending(false);
 
       setTimeout(() => {
-        inputRef.current?.focus()
-      }, 50)
+        inputRef.current?.focus();
+      }, 50);
     }
-  }
+  };
 
   const handleUnload = () => leaveRoom(roomId, clientId)
 
   const handleLeaveChat = async () => {
     try {
       await handleUnload()
-      router.push('/')
+      router.push('/');
     } catch {
-      toast.error('Failed to leave chat')
+      toast.error('Failed to leave chat');
     }
-  }
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
+      e.preventDefault();
+      handleSendMessage();
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -197,5 +182,5 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
         </CardContent>
       </Card>
     </div >
-  )
+  );
 }
