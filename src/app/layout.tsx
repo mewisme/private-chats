@@ -2,6 +2,7 @@ import '@/styles/globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
+import { Analytics } from "@vercel/analytics/next"
 import { Header } from '@/components/common/app-header'
 import { Inter } from 'next/font/google'
 import { StarsBackground } from '@/components/animate-ui/backgrounds/stars'
@@ -97,6 +98,7 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
             {children}
           </div>
           <Toaster />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
