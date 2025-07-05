@@ -1,11 +1,8 @@
-// Room management for matching, joining, and leaving chat rooms
-
 import {
   addDoc,
   arrayRemove,
   arrayUnion,
   collection,
-  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -21,6 +18,7 @@ import { db } from './firebase'
 
 export interface Room {
   id: string;
+  clientId: string;
   participants: string[];
   status: 'waiting' | 'active' | 'ended';
   createdAt: any;
@@ -69,7 +67,7 @@ export async function findOrCreateRoom(clientId: string): Promise<string> {
       await updateDoc(doc(db, 'rooms', roomDoc.id), {
         participants: arrayUnion(clientId),
         status: 'active',
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       })
       return roomDoc.id
     }
@@ -80,7 +78,8 @@ export async function findOrCreateRoom(clientId: string): Promise<string> {
     participants: [clientId],
     status: 'waiting',
     createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    updatedAt: serverTimestamp(),
+    clientId: clientId
   })
 
   return newRoom.id
@@ -90,38 +89,42 @@ export async function findOrCreateRoom(clientId: string): Promise<string> {
  * Leave a room and clean up
  */
 export async function leaveRoom(roomId: string, clientId: string): Promise<void> {
-  const roomRef = doc(db, 'rooms', roomId)
-  const roomDoc = await getDoc(roomRef)
+  try {
+    const roomRef = doc(db, 'rooms', roomId)
+    const roomDoc = await getDoc(roomRef)
 
-  if (!roomDoc.exists()) {
-    return
-  }
+    if (!roomDoc.exists()) {
+      return
+    }
 
-  const roomData = roomDoc.data()
-  const participants = roomData.participants as string[]
+    const roomData = roomDoc.data()
+    const participants = roomData.participants as string[]
 
-  // If this is the last participant or there are only 2 participants, delete the room
-  if (participants.length <= 2) {
-    // Delete all messages in the room
-    const messagesRef = collection(db, 'messages')
-    const messagesQuery = query(messagesRef, where('roomId', '==', roomId))
-    const messagesSnapshot = await getDocs(messagesQuery)
+    // If this is the last participant or there are only 2 participants, delete the room
+    if (participants.length <= 2) {
+      // Delete all messages in the room
+      const messagesRef = collection(db, 'messages')
+      const messagesQuery = query(messagesRef, where('roomId', '==', roomId))
+      const messagesSnapshot = await getDocs(messagesQuery)
 
-    const batch = writeBatch(db)
-    messagesSnapshot.docs.forEach((doc) => {
-      batch.delete(doc.ref)
-    })
+      const batch = writeBatch(db)
+      messagesSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref)
+      })
 
-    // Delete the room
-    batch.delete(roomRef)
+      // Delete the room
+      batch.delete(roomRef)
 
-    await batch.commit()
-  } else {
-    // Just remove the participant
-    await updateDoc(roomRef, {
-      participants: arrayRemove(clientId),
-      updatedAt: serverTimestamp()
-    })
+      await batch.commit()
+    } else {
+      // Just remove the participant
+      await updateDoc(roomRef, {
+        participants: arrayRemove(clientId),
+        updatedAt: serverTimestamp()
+      })
+    }
+  } catch (error) {
+    console.log(error)
   }
 }
 

@@ -14,6 +14,64 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Anonymous Chat',
   description: 'Connect with strangers for anonymous conversations',
+  icons: [
+    {
+      rel: 'icon',
+      type: 'image/png',
+      sizes: '32x32',
+      url: '/favicon-32x32.png',
+    },
+    {
+      rel: 'icon',
+      type: 'image/png',
+      sizes: '16x16',
+      url: '/favicon-16x16.png',
+    },
+    {
+      rel: 'apple-touch-icon',
+      sizes: '180x180',
+      url: '/apple-touch-icon.png',
+    },
+  ],
+  authors: [
+    {
+      name: 'Mew',
+      url: 'https://mewis.me',
+    },
+  ],
+  publisher: 'Anonymous Chat',
+  openGraph: {
+    title: 'Anonymous Chat',
+    description:
+      "Connect with strangers for anonymous conversations",
+    url: "https://chat.mewis.me",
+    siteName: 'Anonymous Chat',
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: 'Anonymous Chat',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@mewisme',
+    title: 'Anonymous Chat',
+    description:
+      "Connect with strangers for anonymous conversations",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: 'Anonymous Chat',
+      },
+    ],
+  },
 }
 
 export const viewport: Viewport = {
