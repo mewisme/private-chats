@@ -33,11 +33,7 @@ export interface Message {
   timestamp: any;
 }
 
-/**
- * Find an existing room with exactly one participant or create a new one
- */
 export async function findOrCreateRoom(clientId: string): Promise<string> {
-  // First, try to find a room with exactly one participant (waiting for someone)
   const roomsRef = collection(db, 'rooms')
   const q = query(
     roomsRef,
@@ -47,12 +43,10 @@ export async function findOrCreateRoom(clientId: string): Promise<string> {
 
   const existingRooms = await getDocs(q)
 
-  // If user is already in a waiting room, return that room
   if (!existingRooms.empty) {
     return existingRooms.docs[0].id
   }
 
-  // Look for any waiting room with exactly one participant (not including current user)
   const waitingRoomsQuery = query(
     roomsRef,
     where('status', '==', 'waiting')
@@ -63,7 +57,6 @@ export async function findOrCreateRoom(clientId: string): Promise<string> {
   for (const roomDoc of waitingRooms.docs) {
     const roomData = roomDoc.data()
     if (roomData.participants.length === 1 && !roomData.participants.includes(clientId)) {
-      // Join this room
       await updateDoc(doc(db, 'rooms', roomDoc.id), {
         participants: arrayUnion(clientId),
         status: 'active',
@@ -73,7 +66,6 @@ export async function findOrCreateRoom(clientId: string): Promise<string> {
     }
   }
 
-  // No suitable room found, create a new one
   const newRoom = await addDoc(roomsRef, {
     participants: [clientId],
     status: 'waiting',
@@ -85,9 +77,6 @@ export async function findOrCreateRoom(clientId: string): Promise<string> {
   return newRoom.id
 }
 
-/**
- * Leave a room and clean up
- */
 export async function leaveRoom(roomId: string, clientId: string): Promise<void> {
   try {
     const roomRef = doc(db, 'rooms', roomId)
@@ -100,9 +89,7 @@ export async function leaveRoom(roomId: string, clientId: string): Promise<void>
     const roomData = roomDoc.data()
     const participants = roomData.participants as string[]
 
-    // If this is the last participant or there are only 2 participants, delete the room
     if (participants.length <= 2) {
-      // Delete all messages in the room
       const messagesRef = collection(db, 'messages')
       const messagesQuery = query(messagesRef, where('roomId', '==', roomId))
       const messagesSnapshot = await getDocs(messagesQuery)
@@ -112,12 +99,10 @@ export async function leaveRoom(roomId: string, clientId: string): Promise<void>
         batch.delete(doc.ref)
       })
 
-      // Delete the room
       batch.delete(roomRef)
 
       await batch.commit()
     } else {
-      // Just remove the participant
       await updateDoc(roomRef, {
         participants: arrayRemove(clientId),
         updatedAt: serverTimestamp()
@@ -128,9 +113,6 @@ export async function leaveRoom(roomId: string, clientId: string): Promise<void>
   }
 }
 
-/**
- * Listen to room changes
- */
 export function listenToRoom(roomId: string, callback: (room: Room | null) => void): () => void {
   const roomRef = doc(db, 'rooms', roomId)
 
@@ -143,9 +125,6 @@ export function listenToRoom(roomId: string, callback: (room: Room | null) => vo
   })
 }
 
-/**
- * Check if a room exists and is active
- */
 export async function isRoomActive(roomId: string): Promise<boolean> {
   const roomRef = doc(db, 'rooms', roomId)
   const roomDoc = await getDoc(roomRef)

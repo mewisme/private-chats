@@ -67,102 +67,98 @@ function getTooltipPosition({
   alignOffset: number;
 }): TooltipPosition {
   switch (side) {
-  case 'top':
-    if (align === 'start') {
-      return {
-        x: rect.left + alignOffset,
-        y: rect.top - sideOffset,
-        transform: 'translate(0, -100%)',
-        initial: { y: 15 },
+    case 'top':
+      if (align === 'start') {
+        return {
+          x: rect.left + alignOffset,
+          y: rect.top - sideOffset,
+          transform: 'translate(0, -100%)',
+          initial: { y: 15 },
+        }
+      } else if (align === 'end') {
+        return {
+          x: rect.right + alignOffset,
+          y: rect.top - sideOffset,
+          transform: 'translate(-100%, -100%)',
+          initial: { y: 15 },
+        }
+      } else {
+        return {
+          x: rect.left + rect.width / 2,
+          y: rect.top - sideOffset,
+          transform: 'translate(-50%, -100%)',
+          initial: { y: 15 },
+        }
       }
-    } else if (align === 'end') {
-      return {
-        x: rect.right + alignOffset,
-        y: rect.top - sideOffset,
-        transform: 'translate(-100%, -100%)',
-        initial: { y: 15 },
+    case 'bottom':
+      if (align === 'start') {
+        return {
+          x: rect.left + alignOffset,
+          y: rect.bottom + sideOffset,
+          transform: 'translate(0, 0)',
+          initial: { y: -15 },
+        }
+      } else if (align === 'end') {
+        return {
+          x: rect.right + alignOffset,
+          y: rect.bottom + sideOffset,
+          transform: 'translate(-100%, 0)',
+          initial: { y: -15 },
+        }
+      } else {
+        return {
+          x: rect.left + rect.width / 2,
+          y: rect.bottom + sideOffset,
+          transform: 'translate(-50%, 0)',
+          initial: { y: -15 },
+        }
       }
-    } else {
-      // center
-      return {
-        x: rect.left + rect.width / 2,
-        y: rect.top - sideOffset,
-        transform: 'translate(-50%, -100%)',
-        initial: { y: 15 },
+    case 'left':
+      if (align === 'start') {
+        return {
+          x: rect.left - sideOffset,
+          y: rect.top + alignOffset,
+          transform: 'translate(-100%, 0)',
+          initial: { x: 15 },
+        }
+      } else if (align === 'end') {
+        return {
+          x: rect.left - sideOffset,
+          y: rect.bottom + alignOffset,
+          transform: 'translate(-100%, -100%)',
+          initial: { x: 15 },
+        }
+      } else {
+        return {
+          x: rect.left - sideOffset,
+          y: rect.top + rect.height / 2,
+          transform: 'translate(-100%, -50%)',
+          initial: { x: 15 },
+        }
       }
-    }
-  case 'bottom':
-    if (align === 'start') {
-      return {
-        x: rect.left + alignOffset,
-        y: rect.bottom + sideOffset,
-        transform: 'translate(0, 0)',
-        initial: { y: -15 },
+    case 'right':
+      if (align === 'start') {
+        return {
+          x: rect.right + sideOffset,
+          y: rect.top + alignOffset,
+          transform: 'translate(0, 0)',
+          initial: { x: -15 },
+        }
+      } else if (align === 'end') {
+        return {
+          x: rect.right + sideOffset,
+          y: rect.bottom + alignOffset,
+          transform: 'translate(0, -100%)',
+          initial: { x: -15 },
+        }
+      } else {
+        return {
+          x: rect.right + sideOffset,
+          y: rect.top + rect.height / 2,
+          transform: 'translate(0, -50%)',
+          initial: { x: -15 },
+        }
       }
-    } else if (align === 'end') {
-      return {
-        x: rect.right + alignOffset,
-        y: rect.bottom + sideOffset,
-        transform: 'translate(-100%, 0)',
-        initial: { y: -15 },
-      }
-    } else {
-      // center
-      return {
-        x: rect.left + rect.width / 2,
-        y: rect.bottom + sideOffset,
-        transform: 'translate(-50%, 0)',
-        initial: { y: -15 },
-      }
-    }
-  case 'left':
-    if (align === 'start') {
-      return {
-        x: rect.left - sideOffset,
-        y: rect.top + alignOffset,
-        transform: 'translate(-100%, 0)',
-        initial: { x: 15 },
-      }
-    } else if (align === 'end') {
-      return {
-        x: rect.left - sideOffset,
-        y: rect.bottom + alignOffset,
-        transform: 'translate(-100%, -100%)',
-        initial: { x: 15 },
-      }
-    } else {
-      // center
-      return {
-        x: rect.left - sideOffset,
-        y: rect.top + rect.height / 2,
-        transform: 'translate(-100%, -50%)',
-        initial: { x: 15 },
-      }
-    }
-  case 'right':
-    if (align === 'start') {
-      return {
-        x: rect.right + sideOffset,
-        y: rect.top + alignOffset,
-        transform: 'translate(0, 0)',
-        initial: { x: -15 },
-      }
-    } else if (align === 'end') {
-      return {
-        x: rect.right + sideOffset,
-        y: rect.bottom + alignOffset,
-        transform: 'translate(0, -100%)',
-        initial: { x: -15 },
-      }
-    } else {
-      // center
-      return {
-        x: rect.right + sideOffset,
-        y: rect.top + rect.height / 2,
-        transform: 'translate(0, -50%)',
-        initial: { x: -15 },
-      }
-    }
   }
 }
 

@@ -1,5 +1,3 @@
-// Message management for sending and reading chat messages
-
 import {
   addDoc,
   collection,
@@ -21,9 +19,6 @@ export interface Message {
   timestamp: any;
 }
 
-/**
- * Send a message to a room
- */
 export async function sendMessage(roomId: string, senderId: string, text: string): Promise<void> {
   if (!text.trim()) {
     return
@@ -39,16 +34,13 @@ export async function sendMessage(roomId: string, senderId: string, text: string
   })
 }
 
-/**
- * Listen to messages in a room
- */
 export function listenToMessages(roomId: string, callback: (messages: Message[]) => void): () => void {
   const messagesRef = collection(db, 'messages')
   const q = query(
     messagesRef,
     where('roomId', '==', roomId),
     orderBy('timestamp', 'asc'),
-    limit(100) // Limit to last 100 messages
+    limit(100)
   )
 
   return onSnapshot(q, (snapshot) => {

@@ -1,7 +1,7 @@
 'use client'
 
-import { SimpleTooltip } from '@/components/common/simple-tooltip'
 import { Message } from '@/lib/message'
+import { SimpleTooltip } from '@/components/common/simple-tooltip'
 import { cn } from '@/utils'
 
 interface ChatMessageProps {
@@ -15,7 +15,7 @@ export function ChatMessage({ message, isOwn }: ChatMessageProps) {
       className={cn(
         'max-w-xs lg:max-w-md px-3 py-2 rounded-md text-sm break-words',
         isOwn
-          ? 'bg-black dark:bg-white text-white dark:text-black'
+          ? 'bg-black dark:bg-gray-100 text-white dark:text-black'
           : 'bg-gray-100 dark:bg-gray-900 text-black dark:text-white border border-gray-200 dark:border-gray-800'
       )}
     >

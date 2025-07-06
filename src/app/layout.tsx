@@ -15,6 +15,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Anonymous Chat',
   description: 'Connect with strangers for anonymous conversations',
+  metadataBase: new URL('https://chat.mewis.me'),
   icons: [
     {
       rel: 'icon',

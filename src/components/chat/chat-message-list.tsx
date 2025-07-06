@@ -1,17 +1,16 @@
 'use client'
 
-import { getClientId } from '@/lib/client-id'
+import { ChatMessage } from './chat-message'
 import { Message } from '@/lib/message'
 import { cn } from '@/utils'
-
-import { ChatMessage } from './chat-message'
+import { useCacheStore } from '@/hooks/use-cache-store'
 
 interface ChatMessageListProps {
   messages: Message[];
 }
 
 export function ChatMessageList({ messages }: ChatMessageListProps) {
-  const clientId = getClientId()
+  const { clientId } = useCacheStore()
 
   return (
     <div>
@@ -21,7 +20,7 @@ export function ChatMessageList({ messages }: ChatMessageListProps) {
         const currentTime = message.timestamp?.toDate?.()?.getTime?.() ?? 0
         const isClose =
           message.senderId === prev?.senderId &&
-          currentTime - prevTime < 5000
+          currentTime - prevTime < 1e5
 
         return (
           <div key={message.id} className={cn(isClose ? 'mt-0.5' : 'mt-2')}>

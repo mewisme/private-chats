@@ -1,17 +1,18 @@
 'use client';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Dialog, DialogBackdrop, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogTitle } from '../animate-ui/headless/dialog';
-import { LogOut, Send } from 'lucide-react';
 import { Message, listenToMessages, sendMessage } from '@/lib/message';
 import { Room, leaveRoom, listenToRoom } from '@/lib/room';
 import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { ChatEmoji } from './chat-emoji';
 import { ChatMessageList } from './chat-message-list';
 import { Input } from '@/components/ui/input';
-import { getClientId } from '@/lib/client-id';
+import { Send } from 'lucide-react';
+import { cn } from '@/utils';
 import { toast } from 'sonner';
+import { useCacheStore } from '@/hooks/use-cache-store';
 import { useRouter } from 'next/navigation';
 
 interface ChatRoomProps {
@@ -24,31 +25,37 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
   const [_, setRoom] = useState<Room | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [isLeaveOpen, setIsLeaveOpen] = useState(false);
+  const [hasMessages, setHasMessages] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const clientId = getClientId();
+  const { clientId, setSubRoom, setSubMessage, clearCache } = useCacheStore()
 
   useEffect(() => {
     const unsubRoom = listenToRoom(roomId, (roomData) => {
       if (!roomData) {
+        console.log('ChatRoom - Room deleted, clearing cache');
         toast.info('The chat has ended');
+        clearCache();
         router.push('/');
         return;
       }
+      console.log('ChatRoom - Room data:', roomData);
       setRoom(roomData);
       setIsConnected(roomData.status === 'active' && roomData.participants.length === 2);
     });
 
     const unsubMessages = listenToMessages(roomId, setMessages);
 
+    setSubRoom(unsubRoom)
+    setSubMessage(unsubMessages)
+
     return () => {
       unsubRoom?.();
       unsubMessages?.();
     };
-  }, [roomId, router]);
+  }, [roomId, router, clearCache]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -56,9 +63,18 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setHasMessages(messages.length > 0);
   }, [messages]);
 
   useEffect(() => {
+    const handleUnload = () => {
+      if (!clientId) {
+        return;
+      }
+      console.log('BeforeUnload - leaving room:', roomId, 'with clientId:', clientId);
+      leaveRoom(roomId, clientId);
+    }
+
     window.addEventListener('beforeunload', handleUnload)
 
     return () => {
@@ -71,6 +87,12 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
 
     setIsSending(true);
     try {
+
+      if (!clientId) {
+        toast.error('Failed to send message. Please refresh the page and try again.')
+        throw new Error('Client ID is not set')
+      }
+
       await sendMessage(roomId, clientId, newMessage);
       setNewMessage('');
     } catch {
@@ -84,16 +106,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     }
   };
 
-  const handleUnload = () => leaveRoom(roomId, clientId)
 
-  const handleLeaveChat = async () => {
-    try {
-      await handleUnload()
-      router.push('/');
-    } catch {
-      toast.error('Failed to leave chat');
-    }
-  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -103,7 +116,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 pt-header">
+    <div className="min-h-screen flex items-center justify-center p-4 mt-10 lg:mt-0">
       <Card className="w-full max-w-2xl h-[600px] flex flex-col">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <div>
@@ -112,35 +125,9 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
               {isConnected ? 'Connected with stranger' : 'Waiting for connection...'}
             </p>
           </div>
-          <Button onClick={() => setIsLeaveOpen(true)} variant="destructive" size="sm">
-            <LogOut className="w-4 h-4 mr-2" />
-            Leave
-          </Button>
-          <Dialog open={isLeaveOpen} onClose={() => setIsLeaveOpen(false)}>
-            <DialogBackdrop />
-            <DialogPanel>
-              <DialogHeader>
-                <DialogTitle>Leave chat</DialogTitle>
-                <DialogDescription>Are you sure you want to leave this chat?</DialogDescription>
-              </DialogHeader>
-              <p>
-                All messages will be deleted and you will be disconnected from the chat.
-              </p>
-              <DialogFooter>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsLeaveOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button variant={'destructive'} onClick={handleLeaveChat}>
-                    Leave
-                  </Button>
-                </DialogFooter>
-              </DialogFooter>
-            </DialogPanel>
-          </Dialog>
         </CardHeader>
 
-        <CardContent className="flex-1 overflow-y-auto space-y-3 pb-0">
+        <CardContent className={cn("flex-1 space-y-3 pb-0", hasMessages && "overflow-y-auto")}>
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
               <p className="text-center text-sm">
@@ -154,7 +141,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
         </CardContent>
 
         <CardContent className="pt-4">
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Input
               ref={inputRef}
               type="text"
@@ -165,13 +152,13 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
               disabled={!isConnected || isSending}
               className="flex-1"
             />
+            <ChatEmoji setEmoji={(emoji) => setNewMessage(newMessage + emoji)} />
             <Button
               onClick={handleSendMessage}
               disabled={!newMessage.trim() || !isConnected || isSending}
-              size="sm"
+              size={'icon'} variant={'ghost'}
             >
-              <Send className="w-4 h-4 mr-2" />
-              Send
+              <Send className='p-px' />
             </Button>
           </div>
           {!isConnected && (

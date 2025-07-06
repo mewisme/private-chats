@@ -5,21 +5,26 @@ import { MessageCircle, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { findOrCreateRoom } from '@/lib/room'
-import { getClientId } from '@/lib/client-id'
 import { toast } from 'sonner'
+import { useCacheStore } from '@/hooks/use-cache-store'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function FindStranger() {
   const [isSearching, setIsSearching] = useState(false)
   const router = useRouter()
+  const { clientId, setRoomId } = useCacheStore()
 
   const handleFindStranger = async () => {
     setIsSearching(true)
 
     try {
-      const clientId = getClientId()
+      if (!clientId) {
+        toast.error('Failed to find a chat room. Please refresh the page and try again.')
+        throw new Error('Client ID is not set')
+      }
       const roomId = await findOrCreateRoom(clientId)
+      setRoomId(roomId)
 
       toast.success('Connecting to chat room...')
 
@@ -32,7 +37,7 @@ export default function FindStranger() {
   }
 
   return (
-    <div className="min-h-dvh flex items-center justify-center p-4 mt-8 sm:mt-0">
+    <div className="min-h-dvh flex items-center justify-center p-4 mt-10 lg:mt-0">
       <Card className="max-w-md w-full">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
