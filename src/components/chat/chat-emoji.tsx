@@ -25,7 +25,7 @@ export function ChatEmoji({ setEmoji }: ChatEmojiProps) {
       <PopoverTrigger
         render={
           <Button size={'icon'} variant={'ghost'}>
-            <Smile className="p-px" />
+            <Smile />
           </Button>
         }
       />

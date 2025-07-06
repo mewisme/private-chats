@@ -1,42 +1,24 @@
 'use client'
 
-import { appendUTMParams, cn } from '@/utils'
-
+import { Markdown } from '../common/markdown/markdown'
 import { Message } from '@/lib/message'
 import { SimpleTooltip } from '@/components/common/simple-tooltip'
+import { cn } from '@/utils'
+import { useSettings } from '@/hooks/use-settings'
 
 interface ChatMessageProps {
   message: Message
   isOwn: boolean
 }
 
-const urlRegex = /https?:\/\/[^\s]+/g
-const utmParams = {
-  utm_source: 'chat.mewis.me',
-  utm_medium: 'message',
-  utm_campaign: 'private-chat'
-}
-
-
 export function ChatMessage({ message, isOwn }: ChatMessageProps) {
-  const parts = message.text.split(urlRegex)
-  const urls = message.text.match(urlRegex)
+  const { settings } = useSettings()
 
   const renderMessage = () => {
-    const elements: React.ReactNode[] = []
-
-    parts.forEach((part, i) => {
-      elements.push(<span key={`text-${i}`}>{part}</span>)
-      if (urls && urls[i]) {
-        elements.push(
-          <a key={`url-${i}`} href={appendUTMParams(urls[i], utmParams)} target="_blank" rel="noopener noreferrer" className='underline'>
-            {urls[i]}
-          </a>
-        )
-      }
-    })
-
-    return elements
+    if (settings.allowMarkdown) {
+      return <Markdown>{message.text}</Markdown>
+    }
+    return <span>{message.text}</span>
   }
 
   return (
@@ -53,7 +35,7 @@ export function ChatMessage({ message, isOwn }: ChatMessageProps) {
               : 'border border-gray-200 bg-gray-100 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'
           )}
         >
-          <p>{renderMessage()}</p>
+          {renderMessage()}
         </div>
       </SimpleTooltip>
     </div>

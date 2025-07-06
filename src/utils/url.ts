@@ -9,3 +9,7 @@ export function appendUTMParams(url: string, params: Record<string, string>): st
     return url
   }
 }
+
+export function autoLinkifyText(text: string): string {
+  return text.replace(/(?<!\]\()(\bhttps?:\/\/[^\s<>"'`)\]}]+)/g, '[$1]($1)')
+}

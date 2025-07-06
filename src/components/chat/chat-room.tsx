@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { ChatEmoji } from './chat-emoji'
+import { ChatInput } from './chat-input'
 import { ChatMessageList } from './chat-message-list'
 import { Input } from '@/components/ui/input'
 import { Send } from 'lucide-react'
@@ -28,7 +29,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
   const [hasMessages, setHasMessages] = useState(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const router = useRouter()
   const { clientId, setSubRoom, setSubMessage, clearCache } = useCacheStore()
 
@@ -138,32 +139,15 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
         </CardContent>
 
         <CardContent className="pt-4">
-          <div className="flex items-center gap-2">
-            <Input
-              ref={inputRef}
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              disabled={!isConnected || isSending}
-              className="flex-1"
-            />
-            <ChatEmoji setEmoji={(emoji) => setNewMessage(newMessage + emoji)} />
-            <Button
-              onClick={handleSendMessage}
-              disabled={!newMessage.trim() || !isConnected || isSending}
-              size={'icon'}
-              variant={'ghost'}
-            >
-              <Send className="p-px" />
-            </Button>
-          </div>
-          {!isConnected && (
-            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Waiting for someone to join the chat...
-            </p>
-          )}
+          <ChatInput
+            inputRef={inputRef}
+            isConnected={isConnected}
+            isSending={isSending}
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            handleKeyPress={handleKeyPress}
+            handleSendMessage={handleSendMessage}
+          />
         </CardContent>
       </Card>
     </div>

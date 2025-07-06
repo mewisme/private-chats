@@ -16,6 +16,7 @@ import { Button } from '../ui/button'
 import Link from 'next/link'
 import { LogOut } from 'lucide-react'
 import { Logo } from '../base/logo'
+import { SettingsDialog } from './settings/settings-dialog'
 import { SimpleTooltip } from './simple-tooltip'
 import { ThemeToggle } from '@/components/common/theme-toggle'
 import { leaveRoom } from '@/lib/room'
@@ -87,6 +88,7 @@ export function Header() {
               </DialogFooter>
             </DialogPanel>
           </Dialog>
+          <SettingsDialog />
           <ThemeToggle />
         </div>
       </div>
