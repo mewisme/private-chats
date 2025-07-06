@@ -2,6 +2,7 @@
 
 import { Dialog, DialogBackdrop, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogTitle } from '../animate-ui/headless/dialog'
 import { useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
 import { Button } from '../ui/button'
 import Link from 'next/link'
@@ -12,12 +13,13 @@ import { ThemeToggle } from '@/components/common/theme-toggle'
 import { leaveRoom } from '@/lib/room'
 import { toast } from 'sonner'
 import { useCacheStore } from '@/hooks/use-cache-store'
-import { useRouter } from 'next/navigation'
 
 export function Header() {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
-  const { clientId, roomId, subRoom, subMessage, clearCache } = useCacheStore()
+  const { clientId, roomId, clearCache } = useCacheStore()
+  const pathname = usePathname()
+  const isChatPage = pathname.startsWith('/chat')
 
   useEffect(() => {
     console.log('Header - roomId changed:', roomId)
@@ -47,7 +49,7 @@ export function Header() {
           <Logo draw isMew />
         </Link>
         <div className='space-x-2'>
-          {roomId && (
+          {roomId && isChatPage && (
             <SimpleTooltip message='Leave Chat'>
               <Button onClick={() => setIsOpen(true)} variant="destructive" size="icon">
                 <LogOut className='h-[1.2rem] w-[1.2rem]' />
