@@ -27,12 +27,12 @@ export const useCacheStore = create<CacheState>((set) => ({
   setSubRoom: (cb) => set({ subRoom: cb }),
   setSubMessage: (cb) => set({ subMessage: cb }),
   clearCache: () => {
-    console.log('CacheStore - clearCache called');
+    console.log('CacheStore - clearCache called')
     set({
       clientId: uuidv4(),
       roomId: null,
       subRoom: null,
-      subMessage: null,
-    });
-  },
+      subMessage: null
+    })
+  }
 }))

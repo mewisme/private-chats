@@ -6,7 +6,7 @@ import { cn } from '@/utils'
 import { useCacheStore } from '@/hooks/use-cache-store'
 
 interface ChatMessageListProps {
-  messages: Message[];
+  messages: Message[]
 }
 
 export function ChatMessageList({ messages }: ChatMessageListProps) {
@@ -18,16 +18,11 @@ export function ChatMessageList({ messages }: ChatMessageListProps) {
         const prev = messages[index - 1]
         const prevTime = prev?.timestamp?.toDate?.()?.getTime?.() ?? 0
         const currentTime = message.timestamp?.toDate?.()?.getTime?.() ?? 0
-        const isClose =
-          message.senderId === prev?.senderId &&
-          currentTime - prevTime < 1e5
+        const isClose = message.senderId === prev?.senderId && currentTime - prevTime < 1e5
 
         return (
           <div key={message.id} className={cn(isClose ? 'mt-0.5' : 'mt-2')}>
-            <ChatMessage
-              message={message}
-              isOwn={message.senderId === clientId}
-            />
+            <ChatMessage message={message} isOwn={message.senderId === clientId} />
           </div>
         )
       })}

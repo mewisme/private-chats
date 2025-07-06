@@ -10,15 +10,10 @@ import {
   type DialogPanelProps as DialogPanelPrimitiveProps,
   type DialogProps as DialogPrimitiveProps,
   DialogTitle as DialogTitlePrimitive,
-  type DialogTitleProps as DialogTitlePrimitiveProps,
+  type DialogTitleProps as DialogTitlePrimitiveProps
 } from '@headlessui/react'
 import { X } from 'lucide-react'
-import {
-  AnimatePresence,
-  type HTMLMotionProps,
-  motion,
-  type Transition,
-} from 'motion/react'
+import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from 'motion/react'
 import * as React from 'react'
 
 import { cn } from '@/utils/index'
@@ -27,9 +22,9 @@ type DialogProps<TTag extends React.ElementType = 'div'> = Omit<
   DialogPrimitiveProps<TTag>,
   'static'
 > & {
-  className?: string;
-  as?: TTag;
-};
+  className?: string
+  as?: TTag
+}
 
 function Dialog<TTag extends React.ElementType = 'div'>({
   className,
@@ -51,12 +46,12 @@ function Dialog<TTag extends React.ElementType = 'div'>({
 
 type DialogBackdropProps<TTag extends React.ElementType = typeof motion.div> =
   DialogBackdropPrimitiveProps<TTag> & {
-    className?: string;
-    as?: TTag;
-  };
+    className?: string
+    as?: TTag
+  }
 
 function DialogBackdrop<TTag extends React.ElementType = typeof motion.div>(
-  props: DialogBackdropProps<TTag>,
+  props: DialogBackdropProps<TTag>
 ) {
   const { className, as = motion.div, ...rest } = props
 
@@ -74,18 +69,20 @@ function DialogBackdrop<TTag extends React.ElementType = typeof motion.div>(
   )
 }
 
-type FlipDirection = 'top' | 'bottom' | 'left' | 'right';
+type FlipDirection = 'top' | 'bottom' | 'left' | 'right'
 
-type DialogPanelProps<TTag extends React.ElementType = typeof motion.div> =
-  Omit<DialogPanelPrimitiveProps<typeof motion.div>, 'transition'> &
-    Omit<HTMLMotionProps<'div'>, 'children'> & {
-      from?: FlipDirection;
-      transition?: Transition;
-      as?: TTag;
-    };
+type DialogPanelProps<TTag extends React.ElementType = typeof motion.div> = Omit<
+  DialogPanelPrimitiveProps<typeof motion.div>,
+  'transition'
+> &
+  Omit<HTMLMotionProps<'div'>, 'children'> & {
+    from?: FlipDirection
+    transition?: Transition
+    as?: TTag
+  }
 
 function DialogPanel<TTag extends React.ElementType = typeof motion.div>(
-  props: DialogPanelProps<TTag>,
+  props: DialogPanelProps<TTag>
 ) {
   const {
     children,
@@ -96,8 +93,7 @@ function DialogPanel<TTag extends React.ElementType = typeof motion.div>(
     ...rest
   } = props
 
-  const initialRotation =
-    from === 'top' || from === 'left' ? '20deg' : '-20deg'
+  const initialRotation = from === 'top' || from === 'left' ? '20deg' : '-20deg'
   const isVertical = from === 'top' || from === 'bottom'
   const rotateAxis = isVertical ? 'rotateX' : 'rotateY'
 
@@ -106,27 +102,27 @@ function DialogPanel<TTag extends React.ElementType = typeof motion.div>(
       key="dialog-panel"
       data-slot="dialog-panel"
       className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg rounded-xl',
-        className,
+        'bg-background fixed top-[50%] left-[50%] z-50 grid w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-xl border p-6 shadow-lg',
+        className
       )}
       as={as as React.ElementType}
       initial={{
         opacity: 0,
         filter: 'blur(4px)',
         transform: `perspective(500px) ${rotateAxis}(${initialRotation}) scale(0.8)`,
-        transition,
+        transition
       }}
       animate={{
         opacity: 1,
         filter: 'blur(0px)',
         transform: `perspective(500px) ${rotateAxis}(0deg) scale(1)`,
-        transition,
+        transition
       }}
       exit={{
         opacity: 0,
         filter: 'blur(4px)',
         transform: `perspective(500px) ${rotateAxis}(${initialRotation}) scale(0.8)`,
-        transition,
+        transition
       }}
       {...rest}
     >
@@ -136,7 +132,7 @@ function DialogPanel<TTag extends React.ElementType = typeof motion.div>(
 
           <CloseButton
             data-slot="dialog-panel-close"
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none"
           >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
@@ -147,10 +143,9 @@ function DialogPanel<TTag extends React.ElementType = typeof motion.div>(
   )
 }
 
-type DialogHeaderProps<TTag extends React.ElementType = 'div'> =
-  React.ComponentProps<TTag> & {
-    as?: TTag;
-  };
+type DialogHeaderProps<TTag extends React.ElementType = 'div'> = React.ComponentProps<TTag> & {
+  as?: TTag
+}
 
 function DialogHeader<TTag extends React.ElementType = 'div'>({
   className,
@@ -160,42 +155,30 @@ function DialogHeader<TTag extends React.ElementType = 'div'>({
   return (
     <Component
       data-slot="dialog-header"
-      className={cn(
-        'flex flex-col space-y-1.5 text-center sm:text-left',
-        className,
-      )}
+      className={cn('flex flex-col space-y-1.5 text-center sm:text-left', className)}
       {...props}
     />
   )
 }
 
-type DialogFooterProps<TTag extends React.ElementType = 'div'> =
-  React.ComponentProps<TTag> & {
-    as?: TTag;
-  };
+type DialogFooterProps<TTag extends React.ElementType = 'div'> = React.ComponentProps<TTag> & {
+  as?: TTag
+}
 
-function DialogFooter({
-  className,
-  as: Component = 'div',
-  ...props
-}: DialogFooterProps) {
+function DialogFooter({ className, as: Component = 'div', ...props }: DialogFooterProps) {
   return (
     <Component
       data-slot="dialog-footer"
-      className={cn(
-        'flex flex-col-reverse sm:flex-row sm:justify-end gap-2',
-        className,
-      )}
+      className={cn('flex flex-col-reverse gap-2 sm:flex-row sm:justify-end', className)}
       {...props}
     />
   )
 }
 
-type DialogTitleProps<TTag extends React.ElementType = 'h2'> =
-  DialogTitlePrimitiveProps<TTag> & {
-    className?: string;
-    as?: TTag;
-  };
+type DialogTitleProps<TTag extends React.ElementType = 'h2'> = DialogTitlePrimitiveProps<TTag> & {
+  className?: string
+  as?: TTag
+}
 
 function DialogTitle<TTag extends React.ElementType = 'h2'>({
   className,
@@ -204,20 +187,18 @@ function DialogTitle<TTag extends React.ElementType = 'h2'>({
   return (
     <DialogTitlePrimitive
       data-slot="dialog-title"
-      className={cn(
-        'text-lg font-semibold leading-none tracking-tight',
-        className,
-      )}
+      className={cn('text-lg leading-none font-semibold tracking-tight', className)}
       {...props}
     />
   )
 }
 
-type DialogDescriptionProps<TTag extends React.ElementType = 'div'> =
-  React.ComponentProps<typeof DialogDescriptionPrimitive<TTag>> & {
-    className?: string;
-    as?: TTag;
-  };
+type DialogDescriptionProps<TTag extends React.ElementType = 'div'> = React.ComponentProps<
+  typeof DialogDescriptionPrimitive<TTag>
+> & {
+  className?: string
+  as?: TTag
+}
 
 function DialogDescription<TTag extends React.ElementType = 'div'>({
   className,
@@ -226,7 +207,7 @@ function DialogDescription<TTag extends React.ElementType = 'div'>({
   return (
     <DialogDescriptionPrimitive
       data-slot="dialog-description"
-      className={cn('text-sm text-muted-foreground', className)}
+      className={cn('text-muted-foreground text-sm', className)}
       {...props}
     />
   )
@@ -246,5 +227,5 @@ export {
   type DialogPanelProps,
   type DialogProps,
   DialogTitle,
-  type DialogTitleProps,
+  type DialogTitleProps
 }

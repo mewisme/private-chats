@@ -6,18 +6,18 @@ import {
   type SpringOptions,
   type Transition,
   useMotionValue,
-  useSpring,
+  useSpring
 } from 'motion/react'
 import * as React from 'react'
 
 import { cn } from '@/utils/index'
 
 type StarLayerProps = HTMLMotionProps<'div'> & {
-  count: number;
-  size: number;
-  transition: Transition;
-  starColor: string;
-};
+  count: number
+  size: number
+  transition: Transition
+  starColor: string
+}
 
 function generateStars(count: number, starColor: string) {
   const shadows: string[] = []
@@ -48,23 +48,23 @@ function StarLayer({
       data-slot="star-layer"
       animate={{ y: [0, -2000] }}
       transition={transition}
-      className={cn('absolute top-0 left-0 w-full h-[2000px]', className)}
+      className={cn('absolute top-0 left-0 h-[2000px] w-full', className)}
       {...props}
     >
       <div
-        className="absolute bg-transparent rounded-full"
+        className="absolute rounded-full bg-transparent"
         style={{
           width: `${size}px`,
           height: `${size}px`,
-          boxShadow: boxShadow,
+          boxShadow: boxShadow
         }}
       />
       <div
-        className="absolute bg-transparent rounded-full top-[2000px]"
+        className="absolute top-[2000px] rounded-full bg-transparent"
         style={{
           width: `${size}px`,
           height: `${size}px`,
-          boxShadow: boxShadow,
+          boxShadow: boxShadow
         }}
       />
     </motion.div>
@@ -72,12 +72,12 @@ function StarLayer({
 }
 
 type StarsBackgroundProps = React.ComponentProps<'div'> & {
-  factor?: number;
-  speed?: number;
-  transition?: SpringOptions;
-  starColor?: string;
-  pointerEvents?: boolean;
-};
+  factor?: number
+  speed?: number
+  transition?: SpringOptions
+  starColor?: string
+  pointerEvents?: boolean
+}
 
 function StarsBackground({
   children,
@@ -104,7 +104,7 @@ function StarsBackground({
       offsetX.set(newOffsetX)
       offsetY.set(newOffsetY)
     },
-    [offsetX, offsetY, factor],
+    [offsetX, offsetY, factor]
   )
 
   return (
@@ -112,7 +112,7 @@ function StarsBackground({
       data-slot="stars-background"
       className={cn(
         'relative size-full overflow-hidden bg-[radial-gradient(ellipse_at_bottom,_#262626_0%,_#000_100%)]',
-        className,
+        className
       )}
       onMouseMove={handleMouseMove}
       {...props}
@@ -133,7 +133,7 @@ function StarsBackground({
           transition={{
             repeat: Infinity,
             duration: speed * 2,
-            ease: 'linear',
+            ease: 'linear'
           }}
           starColor={starColor}
         />
@@ -143,7 +143,7 @@ function StarsBackground({
           transition={{
             repeat: Infinity,
             duration: speed * 3,
-            ease: 'linear',
+            ease: 'linear'
           }}
           starColor={starColor}
         />
@@ -153,9 +153,4 @@ function StarsBackground({
   )
 }
 
-export {
-  StarLayer,
-  type StarLayerProps,
-  StarsBackground,
-  type StarsBackgroundProps,
-}
+export { StarLayer, type StarLayerProps, StarsBackground, type StarsBackgroundProps }

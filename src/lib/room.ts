@@ -17,20 +17,20 @@ import {
 import { db } from './firebase'
 
 export interface Room {
-  id: string;
-  clientId: string;
-  participants: string[];
-  status: 'waiting' | 'active' | 'ended';
-  createdAt: any;
-  updatedAt: any;
+  id: string
+  clientId: string
+  participants: string[]
+  status: 'waiting' | 'active' | 'ended'
+  createdAt: any
+  updatedAt: any
 }
 
 export interface Message {
-  id: string;
-  roomId: string;
-  senderId: string;
-  text: string;
-  timestamp: any;
+  id: string
+  roomId: string
+  senderId: string
+  text: string
+  timestamp: any
 }
 
 export async function findOrCreateRoom(clientId: string): Promise<string> {
@@ -47,10 +47,7 @@ export async function findOrCreateRoom(clientId: string): Promise<string> {
     return existingRooms.docs[0].id
   }
 
-  const waitingRoomsQuery = query(
-    roomsRef,
-    where('status', '==', 'waiting')
-  )
+  const waitingRoomsQuery = query(roomsRef, where('status', '==', 'waiting'))
 
   const waitingRooms = await getDocs(waitingRoomsQuery)
 
@@ -60,7 +57,7 @@ export async function findOrCreateRoom(clientId: string): Promise<string> {
       await updateDoc(doc(db, 'rooms', roomDoc.id), {
         participants: arrayUnion(clientId),
         status: 'active',
-        updatedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       })
       return roomDoc.id
     }
@@ -135,4 +132,4 @@ export async function isRoomActive(roomId: string): Promise<boolean> {
 
   const roomData = roomDoc.data()
   return roomData.status === 'active' && roomData.participants.length === 2
-} 
+}

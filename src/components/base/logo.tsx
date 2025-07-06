@@ -7,31 +7,31 @@ import { cn } from '@/utils'
 const pathVariants = {
   hidden: {
     pathLength: 0,
-    fillOpacity: 0,
+    fillOpacity: 0
   },
   visible: {
     pathLength: 1,
     fillOpacity: 1,
     transition: {
       duration: 2,
-      ease: 'easeInOut',
-    },
-  },
+      ease: 'easeInOut'
+    }
+  }
 }
 
 const sizes = {
   sm: {
     svg: 'h-6',
-    betaTag: 'bottom-[2px] left-[calc(100%+6px)] px-1.5 py-0.5 text-[9px]',
+    betaTag: 'bottom-[2px] left-[calc(100%+6px)] px-1.5 py-0.5 text-[9px]'
   },
   lg: {
     svg: 'h-12',
-    betaTag: 'bottom-[4px] left-[calc(100%+10px)] px-2 py-0.5 text-base',
+    betaTag: 'bottom-[4px] left-[calc(100%+10px)] px-2 py-0.5 text-base'
   },
   xl: {
     svg: 'h-14',
-    betaTag: 'bottom-[7px] left-[calc(100%+15px)] px-2.5 py-1 text-base',
-  },
+    betaTag: 'bottom-[7px] left-[calc(100%+15px)] px-2.5 py-1 text-base'
+  }
 }
 
 const mewblogPaths = [
@@ -62,12 +62,11 @@ export const Logo = ({
   containerClassName,
   ...props
 }: {
-  isMew?: boolean;
-  containerClassName?: string;
-  draw?: boolean;
-  size?: keyof typeof sizes;
+  isMew?: boolean
+  containerClassName?: string
+  draw?: boolean
+  size?: keyof typeof sizes
 } & SVGMotionProps<SVGSVGElement>) => {
-
   const paths = isMew ? mewPaths : mewblogPaths
   const viewBox = isMew ? '0 0 569 130' : '0 0 702 138'
 
@@ -79,9 +78,9 @@ export const Logo = ({
         className={cn(sizes[size].svg, className)}
         {...props}
       >
-        {paths.map((path, index) =>
+        {paths.map((path, index) => (
           <motion.path
-            variants={draw ? pathVariants : {} as any}
+            variants={draw ? pathVariants : ({} as any)}
             initial={draw ? 'hidden' : false}
             animate={draw ? 'visible' : false}
             stroke="currentColor"
@@ -90,10 +89,10 @@ export const Logo = ({
             d={path}
             key={index}
           />
-        )}
+        ))}
       </motion.svg>
 
-      <span className="sr-only">{isMew ? 'Mew\'s Portfolio' : 'Mew\'s Blog'}</span>
+      <span className="sr-only">{isMew ? "Mew's Portfolio" : "Mew's Blog"}</span>
     </div>
   )
 }

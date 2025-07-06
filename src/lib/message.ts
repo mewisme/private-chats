@@ -12,11 +12,11 @@ import {
 import { db } from './firebase'
 
 export interface Message {
-  id: string;
-  roomId: string;
-  senderId: string;
-  text: string;
-  timestamp: any;
+  id: string
+  roomId: string
+  senderId: string
+  text: string
+  timestamp: any
 }
 
 export async function sendMessage(roomId: string, senderId: string, text: string): Promise<void> {
@@ -34,7 +34,10 @@ export async function sendMessage(roomId: string, senderId: string, text: string
   })
 }
 
-export function listenToMessages(roomId: string, callback: (messages: Message[]) => void): () => void {
+export function listenToMessages(
+  roomId: string,
+  callback: (messages: Message[]) => void
+): () => void {
   const messagesRef = collection(db, 'messages')
   const q = query(
     messagesRef,
@@ -50,4 +53,4 @@ export function listenToMessages(roomId: string, callback: (messages: Message[])
     })
     callback(messages)
   })
-} 
+}

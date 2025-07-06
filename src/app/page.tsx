@@ -25,9 +25,7 @@ export default function FindStranger() {
       }
       const roomId = await findOrCreateRoom(clientId)
       setRoomId(roomId)
-
       toast.success('Connecting to chat room...')
-
       router.push(`/chat/${roomId}`)
     } catch (error) {
       toast.error('Failed to find a chat room. Please try again.')
@@ -37,12 +35,12 @@ export default function FindStranger() {
   }
 
   return (
-    <div className="min-h-dvh flex items-center justify-center p-4 mt-10 lg:mt-0">
-      <Card className="max-w-md w-full">
+    <div className="mt-10 flex min-h-dvh items-center justify-center p-4 lg:mt-0">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="p-4 rounded-2xl bg-black dark:bg-white">
-              <MessageCircle className="w-8 h-8 text-white dark:text-black" />
+          <div className="mb-4 flex justify-center">
+            <div className="rounded-2xl bg-black p-4 dark:bg-white">
+              <MessageCircle className="h-8 w-8 text-white dark:text-black" />
             </div>
           </div>
           <CardTitle className="text-2xl">Anonymous Chat</CardTitle>
@@ -54,8 +52,10 @@ export default function FindStranger() {
         <CardContent className="space-y-6">
           <Card>
             <CardContent className="p-4">
-              <h3 className="font-semibold text-black dark:text-white mb-3 text-sm">How it works:</h3>
-              <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-2">
+              <h3 className="mb-3 text-sm font-semibold text-black dark:text-white">
+                How it works:
+              </h3>
+              <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
                 <li>• Click "Find Stranger" to search for someone to chat with</li>
                 <li>• If someone is waiting, you'll join their room instantly</li>
                 <li>• Otherwise, you'll wait for someone to find you</li>
@@ -64,20 +64,15 @@ export default function FindStranger() {
             </CardContent>
           </Card>
 
-          <Button
-            onClick={handleFindStranger}
-            disabled={isSearching}
-            className="w-full"
-            size="lg"
-          >
+          <Button onClick={handleFindStranger} disabled={isSearching} className="w-full" size="lg">
             {isSearching ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white dark:border-black border-t-transparent mr-2"></div>
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent dark:border-black"></div>
                 Searching...
               </>
             ) : (
               <>
-                <Users className="w-4 h-4 mr-2" />
+                <Users className="mr-2 h-4 w-4" />
                 Find Stranger
               </>
             )}
@@ -92,4 +87,4 @@ export default function FindStranger() {
       </Card>
     </div>
   )
-} 
+}

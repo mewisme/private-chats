@@ -1,12 +1,40 @@
 {
   "private": true,
   "name": "private-chats",
-  "version": "0.0.3-hotfix.1",
+  "description": "Real-time anonymous 1-on-1 chat app using Next.js 15, Firebase, Tailwind CSS, and Zustand.",
+  "version": "0.0.4",
+  "author": {
+    "name": "Nguyen Mau Minh",
+    "email": "mew@mewis.me",
+    "url": "https://mewis.me"
+  },
+  "license": "MIT",
+  "homepage": "https://chat.mewis.me",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mewisme/private-chats"
+  },
+  "bugs": {
+    "url": "https://github.com/mewisme/private-chats/issues"
+  },
+  "keywords": [
+    "chat",
+    "anonymous",
+    "1-on-1",
+    "real-time"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "format:write": "prettier --write \"**/*.{ts,tsx}\" --cache",
+    "format:check": "prettier --check \"**/*.{ts,tsx}\" --cache"
   },
   "dependencies": {
     "@base-ui-components/react": "1.0.0-beta.1",

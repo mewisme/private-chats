@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from '@vercel/analytics/next'
 import { Header } from '@/components/common/app-header'
 import { Inter } from 'next/font/google'
 import { StarsBackground } from '@/components/animate-ui/backgrounds/stars'
@@ -21,69 +21,67 @@ export const metadata: Metadata = {
       rel: 'icon',
       type: 'image/png',
       sizes: '32x32',
-      url: '/favicon-32x32.png',
+      url: '/favicon-32x32.png'
     },
     {
       rel: 'icon',
       type: 'image/png',
       sizes: '16x16',
-      url: '/favicon-16x16.png',
+      url: '/favicon-16x16.png'
     },
     {
       rel: 'apple-touch-icon',
       sizes: '180x180',
-      url: '/apple-touch-icon.png',
-    },
+      url: '/apple-touch-icon.png'
+    }
   ],
   authors: [
     {
       name: 'Mew',
-      url: 'https://mewis.me',
-    },
+      url: 'https://mewis.me'
+    }
   ],
   publisher: 'Anonymous Chat',
   openGraph: {
     title: 'Anonymous Chat',
-    description:
-      "Connect with strangers for anonymous conversations",
-    url: "https://chat.mewis.me",
+    description: 'Connect with strangers for anonymous conversations',
+    url: 'https://chat.mewis.me',
     siteName: 'Anonymous Chat',
     images: [
       {
-        url: "/og-image.png",
+        url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Anonymous Chat',
-      },
+        alt: 'Anonymous Chat'
+      }
     ],
     locale: 'en_US',
-    type: 'website',
+    type: 'website'
   },
   twitter: {
     card: 'summary_large_image',
     site: '@mewisme',
     title: 'Anonymous Chat',
-    description:
-      "Connect with strangers for anonymous conversations",
+    description: 'Connect with strangers for anonymous conversations',
     images: [
       {
-        url: "/og-image.png",
+        url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Anonymous Chat',
-      },
-    ],
-  },
+        alt: 'Anonymous Chat'
+      }
+    ]
+  }
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  viewportFit: 'cover', // This enables safe area insets on iOS
+  viewportFit: 'cover' // This enables safe area insets on iOS
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode; }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'relative h-dvh')}>
@@ -93,11 +91,9 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
           enableSystem
           disableTransitionOnChange
         >
-          <StarsBackground className="absolute flex items-center justify-center rounded-xl -z-50 h-full" />
+          <StarsBackground className="absolute -z-50 flex h-full items-center justify-center rounded-xl" />
           <Header />
-          <div className='h-dvh w-full'>
-            {children}
-          </div>
+          <div className="h-dvh w-full">{children}</div>
           <Toaster />
           <Analytics />
         </ThemeProvider>

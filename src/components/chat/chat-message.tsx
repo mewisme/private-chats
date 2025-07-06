@@ -5,18 +5,18 @@ import { SimpleTooltip } from '@/components/common/simple-tooltip'
 import { cn } from '@/utils'
 
 interface ChatMessageProps {
-  message: Message;
-  isOwn: boolean;
+  message: Message
+  isOwn: boolean
 }
 
 export function ChatMessage({ message, isOwn }: ChatMessageProps) {
   const messageContent = (
     <div
       className={cn(
-        'max-w-xs lg:max-w-md px-3 py-2 rounded-md text-sm break-words',
+        'max-w-xs rounded-md px-3 py-2 text-sm break-words lg:max-w-md',
         isOwn
-          ? 'bg-black dark:bg-gray-100 text-white dark:text-black'
-          : 'bg-gray-100 dark:bg-gray-900 text-black dark:text-white border border-gray-200 dark:border-gray-800'
+          ? 'bg-black text-white dark:bg-gray-100 dark:text-black'
+          : 'border border-gray-200 bg-gray-100 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'
       )}
     >
       <p>{message.text}</p>
@@ -26,9 +26,7 @@ export function ChatMessage({ message, isOwn }: ChatMessageProps) {
   return (
     <div className={cn('flex', isOwn ? 'justify-end' : 'justify-start')}>
       <SimpleTooltip
-        message={
-          message.timestamp?.toDate?.()?.toLocaleTimeString() ?? 'Sending...'
-        }
+        message={message.timestamp?.toDate?.()?.toLocaleTimeString() ?? 'Sending...'}
         side={isOwn ? 'left' : 'right'}
       >
         {messageContent}

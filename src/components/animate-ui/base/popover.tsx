@@ -1,108 +1,89 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import { Popover as PopoverPrimitive } from '@base-ui-components/react/popover';
-import {
-  AnimatePresence,
-  HTMLMotionProps,
-  motion,
-  type Transition,
-} from 'motion/react';
+import * as React from 'react'
+import { Popover as PopoverPrimitive } from '@base-ui-components/react/popover'
+import { AnimatePresence, HTMLMotionProps, motion, type Transition } from 'motion/react'
 
-import { cn } from '@/utils/index';
+import { cn } from '@/utils/index'
 
-type Side = React.ComponentPropsWithoutRef<
-  typeof PopoverPrimitive.Positioner
->['side'];
+type Side = React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Positioner>['side']
 
-type Align = React.ComponentPropsWithoutRef<
-  typeof PopoverPrimitive.Positioner
->['align'];
+type Align = React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Positioner>['align']
 
 const getInitialPosition = (side: Side) => {
   switch (side) {
     case 'top':
-      return { y: 15 };
+      return { y: 15 }
     case 'bottom':
-      return { y: -15 };
+      return { y: -15 }
     case 'left':
     case 'inline-start':
-      return { x: 15 };
+      return { x: 15 }
     case 'right':
     case 'inline-end':
-      return { x: -15 };
+      return { x: -15 }
   }
-};
+}
 
 type PopoverContextType = {
-  isOpen: boolean;
-  side?: Side;
-  setSide?: (side: Side) => void;
-};
+  isOpen: boolean
+  side?: Side
+  setSide?: (side: Side) => void
+}
 
-const PopoverContext = React.createContext<PopoverContextType | undefined>(
-  undefined,
-);
+const PopoverContext = React.createContext<PopoverContextType | undefined>(undefined)
 
 const usePopover = (): PopoverContextType => {
-  const context = React.useContext(PopoverContext);
+  const context = React.useContext(PopoverContext)
   if (!context) {
-    throw new Error('usePopover must be used within a Popover');
+    throw new Error('usePopover must be used within a Popover')
   }
-  return context;
-};
+  return context
+}
 
-type PopoverProps = React.ComponentProps<typeof PopoverPrimitive.Root>;
+type PopoverProps = React.ComponentProps<typeof PopoverPrimitive.Root>
 
 function Popover(props: PopoverProps) {
-  const [isOpen, setIsOpen] = React.useState(
-    props?.open ?? props?.defaultOpen ?? false,
-  );
+  const [isOpen, setIsOpen] = React.useState(props?.open ?? props?.defaultOpen ?? false)
 
   React.useEffect(() => {
-    if (props?.open !== undefined) setIsOpen(props.open);
-  }, [props?.open]);
+    if (props?.open !== undefined) setIsOpen(props.open)
+  }, [props?.open])
 
   const handleOpenChange = React.useCallback(
     (
       open: boolean,
       event: Event | undefined,
-      reason: Parameters<NonNullable<PopoverProps['onOpenChange']>>[2],
+      reason: Parameters<NonNullable<PopoverProps['onOpenChange']>>[2]
     ) => {
-      setIsOpen(open);
-      props.onOpenChange?.(open, event, reason);
+      setIsOpen(open)
+      props.onOpenChange?.(open, event, reason)
     },
-    [props],
-  );
+    [props]
+  )
 
   return (
     <PopoverContext.Provider value={{ isOpen }}>
-      <PopoverPrimitive.Root
-        data-slot="popover"
-        {...props}
-        onOpenChange={handleOpenChange}
-      />
+      <PopoverPrimitive.Root data-slot="popover" {...props} onOpenChange={handleOpenChange} />
     </PopoverContext.Provider>
-  );
+  )
 }
 
-type PopoverTriggerProps = React.ComponentProps<
-  typeof PopoverPrimitive.Trigger
->;
+type PopoverTriggerProps = React.ComponentProps<typeof PopoverPrimitive.Trigger>
 
 function PopoverTrigger(props: PopoverTriggerProps) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
+  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
 }
 
 type PopoverContentProps = Omit<
   React.ComponentProps<typeof PopoverPrimitive.Positioner>,
   'render'
 > & {
-  transition?: Transition;
-  popupProps?: typeof PopoverPrimitive.Popup;
-  motionProps?: HTMLMotionProps<'div'>;
-  positionerClassName?: string;
-};
+  transition?: Transition
+  popupProps?: typeof PopoverPrimitive.Popup
+  motionProps?: HTMLMotionProps<'div'>
+  positionerClassName?: string
+}
 
 function PopoverContent({
   children,
@@ -116,8 +97,8 @@ function PopoverContent({
   transition = { type: 'spring', stiffness: 300, damping: 25 },
   ...props
 }: PopoverContentProps) {
-  const { isOpen } = usePopover();
-  const initialPosition = getInitialPosition(side);
+  const { isOpen } = usePopover()
+  const initialPosition = getInitialPosition(side)
 
   return (
     <AnimatePresence>
@@ -135,8 +116,8 @@ function PopoverContent({
               data-slot="popover-popup"
               {...popupProps}
               className={cn(
-                'w-72 rounded-lg border bg-popover p-4 text-popover-foreground shadow-md outline-hidden',
-                className,
+                'bg-popover text-popover-foreground w-72 rounded-lg border p-4 shadow-md outline-hidden',
+                className
               )}
               render={
                 <motion.div
@@ -155,7 +136,7 @@ function PopoverContent({
         </PopoverPrimitive.Portal>
       )}
     </AnimatePresence>
-  );
+  )
 }
 
 export {
@@ -168,5 +149,5 @@ export {
   type PopoverTriggerProps,
   type PopoverContentProps,
   type Side,
-  type Align,
-};
+  type Align
+}

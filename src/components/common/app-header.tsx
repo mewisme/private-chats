@@ -1,6 +1,14 @@
 'use client'
 
-import { Dialog, DialogBackdrop, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogTitle } from '../animate-ui/headless/dialog'
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogTitle
+} from '../animate-ui/headless/dialog'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
@@ -27,32 +35,35 @@ export function Header() {
 
   const handleLeaveChat = async () => {
     if (!roomId || !clientId) {
-      toast.error('You are not in a chat');
-      return;
+      toast.error('You are not in a chat')
+      return
     }
 
     try {
-      console.log('Header - Manual leave, roomId:', roomId, 'clientId:', clientId);
-      await leaveRoom(roomId, clientId);
-      clearCache();
-      router.push('/');
-      setIsOpen(false);
+      console.log('Header - Manual leave, roomId:', roomId, 'clientId:', clientId)
+      await leaveRoom(roomId, clientId)
+      clearCache()
+      router.push('/')
+      setIsOpen(false)
     } catch {
-      toast.error('Failed to leave chat');
+      toast.error('Failed to leave chat')
     }
-  };
+  }
 
   return (
-    <header className='fixed top-0 left-0 right-0 z-40 w-full items-center justify-center flex' style={{ paddingTop: 'var(--safe-area-inset-top)' }}>
-      <div className='flex items-center justify-between w-full px-4 py-2 max-w-4xl backdrop-blur-xl'>
+    <header
+      className="fixed top-0 right-0 left-0 z-40 flex w-full items-center justify-center"
+      style={{ paddingTop: 'var(--safe-area-inset-top)' }}
+    >
+      <div className="flex w-full max-w-4xl items-center justify-between px-4 py-2 backdrop-blur-xl">
         <Link href="/">
           <Logo draw isMew />
         </Link>
-        <div className='space-x-2'>
+        <div className="space-x-2">
           {roomId && isChatPage && (
-            <SimpleTooltip message='Leave Chat'>
+            <SimpleTooltip message="Leave Chat">
               <Button onClick={() => setIsOpen(true)} variant="destructive" size="icon">
-                <LogOut className='h-[1.2rem] w-[1.2rem]' />
+                <LogOut className="h-[1.2rem] w-[1.2rem]" />
               </Button>
             </SimpleTooltip>
           )}
@@ -63,9 +74,7 @@ export function Header() {
                 <DialogTitle>Leave chat</DialogTitle>
                 <DialogDescription>Are you sure you want to leave this chat?</DialogDescription>
               </DialogHeader>
-              <p>
-                All messages will be deleted and you will be disconnected from the chat.
-              </p>
+              <p>All messages will be deleted and you will be disconnected from the chat.</p>
               <DialogFooter>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsOpen(false)}>
@@ -83,4 +92,4 @@ export function Header() {
       </div>
     </header>
   )
-} 
+}

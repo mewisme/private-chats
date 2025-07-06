@@ -3,8 +3,8 @@ import type { MetadataRoute } from 'next'
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
-      userAgent: '*',
+      userAgent: '*'
     },
-    sitemap: 'https://chat.mewis.me/sitemap.xml',
+    sitemap: 'https://chat.mewis.me/sitemap.xml'
   }
 }
