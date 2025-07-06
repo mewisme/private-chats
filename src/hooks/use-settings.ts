@@ -34,7 +34,7 @@ export const useSettings = create<SettingsState>()(
     {
       name: 'app_settings',
       partialize: (state) => ({ settings: state.settings }),
-      skipHydration: typeof window === 'undefined',
+      skipHydration: typeof window === 'undefined'
     }
   )
 )

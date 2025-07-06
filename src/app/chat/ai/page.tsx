@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic'
 
-// Dynamic import to prevent SSR issues with browser APIs
 const ChatRoom = dynamic(() => import('@/components/chat/chat-room'), {
   ssr: false,
   loading: () => (

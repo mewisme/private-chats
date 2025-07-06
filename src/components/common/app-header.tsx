@@ -9,12 +9,12 @@ import {
   DialogPanel,
   DialogTitle
 } from '../animate-ui/headless/dialog'
+import { Github, LogOut } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
 import { Button } from '../ui/button'
 import Link from 'next/link'
-import { LogOut } from 'lucide-react'
 import { Logo } from '../base/logo'
 import { SettingsDialog } from './settings/settings-dialog'
 import { SimpleTooltip } from './simple-tooltip'
@@ -90,6 +90,11 @@ export function Header() {
           </Dialog>
           <SettingsDialog />
           <ThemeToggle />
+          <Link href={'https://github.com/mewisme/private-chats'} target='_blank'>
+            <Button variant={'outline'} size={'icon'}>
+              <Github />
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
