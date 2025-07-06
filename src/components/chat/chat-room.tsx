@@ -5,15 +5,12 @@ import { Message, listenToMessages, sendMessage } from '@/lib/message'
 import { Room, leaveRoom, listenToRoom } from '@/lib/room'
 import { useEffect, useRef, useState } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { ChatEmoji } from './chat-emoji'
 import { ChatInput } from './chat-input'
 import { ChatMessageList } from './chat-message-list'
-import { Input } from '@/components/ui/input'
-import { Send } from 'lucide-react'
 import { cn } from '@/utils'
 import { toast } from 'sonner'
 import { useCacheStore } from '@/hooks/use-cache-store'
+import { useNotifications } from '@/hooks/use-notifications'
 import { useRouter } from 'next/navigation'
 
 interface ChatRoomProps {
@@ -27,11 +24,15 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
   const [isConnected, setIsConnected] = useState(false)
   const [isSending, setIsSending] = useState(false)
   const [hasMessages, setHasMessages] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const previousMessagesRef = useRef<Message[]>([])
+  const originalTitleRef = useRef<string>('')
   const router = useRouter()
   const { clientId, setSubRoom, setSubMessage, clearCache } = useCacheStore()
+  const { showNotification, requestPermission } = useNotifications()
 
   useEffect(() => {
     const unsubRoom = listenToRoom(roomId, (roomData) => {
@@ -47,7 +48,30 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
       setIsConnected(roomData.status === 'active' && roomData.participants.length === 2)
     })
 
-    const unsubMessages = listenToMessages(roomId, setMessages)
+    const handleMessagesUpdate = (newMessages: Message[]) => {
+      const previousMessages = previousMessagesRef.current
+
+      if (newMessages.length > previousMessages.length) {
+        const latestMessage = newMessages[newMessages.length - 1]
+
+        if (latestMessage && latestMessage.senderId !== clientId) {
+          showNotification({
+            title: '💬 New message',
+            body: latestMessage.text || 'You have a new message'
+          })
+
+          if (document.hidden) {
+            setUnreadCount((prev) => prev + 1)
+          }
+        }
+      }
+
+      previousMessagesRef.current = newMessages
+
+      setMessages(newMessages)
+    }
+
+    const unsubMessages = listenToMessages(roomId, handleMessagesUpdate)
 
     setSubRoom(unsubRoom)
     setSubMessage(unsubMessages)
@@ -56,11 +80,44 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
       unsubRoom?.()
       unsubMessages?.()
     }
-  }, [roomId, router, clearCache])
+  }, [roomId, router, clearCache, clientId, showNotification])
 
   useEffect(() => {
     inputRef.current?.focus()
   }, [isConnected])
+
+  useEffect(() => {
+    requestPermission()
+  }, [requestPermission])
+
+  useEffect(() => {
+    originalTitleRef.current = document.title
+
+    const handleFocus = () => {
+      setUnreadCount(0)
+      document.title = originalTitleRef.current
+    }
+
+    const handleBlur = () => {
+    }
+
+    window.addEventListener('focus', handleFocus)
+    window.addEventListener('blur', handleBlur)
+
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+      window.removeEventListener('blur', handleBlur)
+      document.title = originalTitleRef.current
+    }
+  }, [])
+
+  useEffect(() => {
+    if (unreadCount > 0 && document.hidden) {
+      document.title = `(${unreadCount}) ${originalTitleRef.current}`
+    } else if (unreadCount === 0) {
+      document.title = originalTitleRef.current
+    }
+  }, [unreadCount])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
