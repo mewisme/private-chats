@@ -12,13 +12,14 @@ export function useNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default')
 
   useEffect(() => {
-    if ('Notification' in window) {
+    // Only run on client side
+    if (typeof window !== 'undefined' && 'Notification' in window) {
       setPermission(Notification.permission)
     }
   }, [])
 
   const requestPermission = useCallback(async (): Promise<NotificationPermission> => {
-    if (!('Notification' in window)) {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
       console.warn('This browser does not support notifications')
       return 'denied'
     }
@@ -34,7 +35,7 @@ export function useNotifications() {
 
   const showNotification = useCallback(
     async (options: NotificationOptions): Promise<void> => {
-      if (!('Notification' in window)) {
+      if (typeof window === 'undefined' || !('Notification' in window)) {
         console.warn('This browser does not support notifications')
         return
       }
@@ -72,6 +73,6 @@ export function useNotifications() {
     permission,
     requestPermission,
     showNotification,
-    isSupported: 'Notification' in window
+    isSupported: typeof window !== 'undefined' && 'Notification' in window
   }
 }

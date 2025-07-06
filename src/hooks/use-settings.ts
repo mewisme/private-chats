@@ -33,7 +33,8 @@ export const useSettings = create<SettingsState>()(
     }),
     {
       name: 'app_settings', // 👈 localStorage key
-      partialize: (state) => ({ settings: state.settings }) // optional
+      partialize: (state) => ({ settings: state.settings }), // optional
+      skipHydration: typeof window === 'undefined', // Skip hydration on server
     }
   )
 )
