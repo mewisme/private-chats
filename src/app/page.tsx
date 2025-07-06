@@ -1,19 +1,21 @@
 'use client'
 
+import { BotMessageSquare, MessageCircle, Users } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { MessageCircle, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { findOrCreateRoom } from '@/lib/room'
 import { toast } from 'sonner'
 import { useCacheStore } from '@/hooks/use-cache-store'
 import { useRouter } from 'next/navigation'
+import { useSettings } from '@/hooks/use-settings'
 import { useState } from 'react'
 
 export default function FindStranger() {
   const [isSearching, setIsSearching] = useState(false)
   const router = useRouter()
   const { clientId, setRoomId } = useCacheStore()
+  const { settings } = useSettings()
 
   const handleFindStranger = async () => {
     setIsSearching(true)
@@ -32,6 +34,11 @@ export default function FindStranger() {
     } finally {
       setIsSearching(false)
     }
+  }
+
+  const handleWithAI = async () => {
+    toast.success('Starting chat with AI...')
+    router.push(`/chat/ai`)
   }
 
   return (
@@ -64,19 +71,31 @@ export default function FindStranger() {
             </CardContent>
           </Card>
 
-          <Button onClick={handleFindStranger} disabled={isSearching} className="w-full" size="lg">
-            {isSearching ? (
-              <>
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent dark:border-black"></div>
-                Searching...
-              </>
-            ) : (
-              <>
-                <Users className="mr-2 h-4 w-4" />
-                Find Stranger
-              </>
-            )}
-          </Button>
+          {settings.aiMode ? (
+            <Button onClick={handleWithAI} className="w-full" size={'lg'}>
+              <BotMessageSquare className="mr-2 size-4" />
+              Chat with AI
+            </Button>
+          ) : (
+            <Button
+              onClick={handleFindStranger}
+              disabled={isSearching}
+              className="w-full"
+              size="lg"
+            >
+              {isSearching ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent dark:border-black"></div>
+                  Searching...
+                </>
+              ) : (
+                <>
+                  <Users className="mr-2 h-4 w-4" />
+                  Find Stranger
+                </>
+              )}
+            </Button>
+          )}
 
           <div className="text-center">
             <p className="text-xs text-gray-500 dark:text-gray-500">

@@ -5,12 +5,14 @@ export type Settings = {
   allowMarkdown: boolean
   allowEmoji: boolean
   linkPreview: boolean
+  aiMode: boolean
 }
 
 const DEFAULT_SETTINGS: Settings = {
   allowMarkdown: false,
   allowEmoji: false,
-  linkPreview: false
+  linkPreview: false,
+  aiMode: false
 }
 
 type SettingsState = {

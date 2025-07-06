@@ -34,6 +34,10 @@ export function SettingsDialog() {
     {
       id: 'linkPreview',
       label: 'Show link preview'
+    },
+    {
+      id: 'aiMode',
+      label: 'Enable AI mode'
     }
   ]
 

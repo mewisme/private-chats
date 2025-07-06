@@ -16,7 +16,7 @@ export function SettingItem({ id, label }: SettingItemProps) {
     <div className="flex items-center space-x-2">
       <Checkbox
         id={id}
-        checked={settings[id]}
+        checked={settings[id] ?? false}
         onCheckedChange={(checked) => updateSetting(id, checked)}
       />
       <Label htmlFor={id}>{label}</Label>
