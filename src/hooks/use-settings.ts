@@ -1,5 +1,6 @@
+import { PersistOptions, persist } from 'zustand/middleware'
+
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
 export type Settings = {
   allowMarkdown: boolean
@@ -17,24 +18,58 @@ const DEFAULT_SETTINGS: Settings = {
 
 type SettingsState = {
   settings: Settings
+  isHydrated: boolean
   updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void
   resetSettings: () => void
+  setHydrated: () => void
+}
+
+const persistOptions: PersistOptions<SettingsState, Partial<SettingsState>> = {
+  name: 'app_settings',
+  partialize: (state) => ({ settings: state.settings, isHydrated: state.isHydrated }),
+  skipHydration: true, // Always skip hydration to prevent mismatches
+  onRehydrateStorage: () => (state) => {
+    if (state) {
+      state.setHydrated()
+    }
+  }
 }
 
 export const useSettings = create<SettingsState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       settings: DEFAULT_SETTINGS,
-      updateSetting: (key, value) =>
-        set((state) => ({
-          settings: { ...state.settings, [key]: value }
-        })),
-      resetSettings: () => set({ settings: DEFAULT_SETTINGS })
+      isHydrated: false,
+      updateSetting: (key, value) => {
+        try {
+          set((state) => ({
+            settings: { ...state.settings, [key]: value }
+          }))
+        } catch (error) {
+          console.error('Failed to update setting:', error)
+        }
+      },
+      resetSettings: () => {
+        try {
+          set({ settings: DEFAULT_SETTINGS })
+        } catch (error) {
+          console.error('Failed to reset settings:', error)
+        }
+      },
+      setHydrated: () => set({ isHydrated: true })
     }),
-    {
-      name: 'app_settings',
-      partialize: (state) => ({ settings: state.settings }),
-      skipHydration: typeof window === 'undefined'
-    }
+    persistOptions
   )
 )
+
+// Helper hook to ensure settings are hydrated before use
+export function useHydratedSettings() {
+  const store = useSettings()
+
+  // Rehydrate on first client-side render
+  if (typeof window !== 'undefined' && !store.isHydrated) {
+    useSettings.persist.rehydrate()
+  }
+
+  return store
+}

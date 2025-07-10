@@ -3,6 +3,7 @@ import '@/styles/globals.css'
 import type { Metadata, Viewport } from 'next'
 
 import { Analytics } from '@vercel/analytics/next'
+import { ErrorBoundary } from '@/components/providers/error-boundary'
 import { Header } from '@/components/common/app-header'
 import { Inter } from 'next/font/google'
 import { StarsBackground } from '@/components/animate-ui/backgrounds/stars'
@@ -85,18 +86,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'relative h-dvh')}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <StarsBackground className="absolute -z-50 flex h-full items-center justify-center rounded-xl" />
-          <Header />
-          <div className="h-dvh w-full">{children}</div>
-          <Toaster />
-          <Analytics />
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <StarsBackground className="absolute -z-50 flex h-full items-center justify-center rounded-xl" />
+            <Header />
+            <div className="h-dvh w-full">{children}</div>
+            <Toaster />
+            <Analytics />
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )

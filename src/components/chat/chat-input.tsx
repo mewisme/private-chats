@@ -8,7 +8,7 @@ import { ChatEmoji } from './chat-emoji'
 import { Send } from 'lucide-react'
 import { Textarea } from '../ui/textarea'
 import { useCacheStore } from '@/hooks/use-cache-store'
-import { useSettings } from '@/hooks/use-settings'
+import { useHydratedSettings } from '@/hooks/use-settings'
 
 interface ChatInputProps {
   inputRef: RefObject<HTMLTextAreaElement | null>
@@ -33,7 +33,7 @@ export function ChatInput({
   roomId,
   isAI = false
 }: ChatInputProps) {
-  const { settings } = useSettings()
+  const { settings } = useHydratedSettings()
   const { clientId } = useCacheStore()
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isTypingRef = useRef(false)

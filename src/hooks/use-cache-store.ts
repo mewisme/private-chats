@@ -21,12 +21,13 @@ interface CacheState {
   setSubRoom: (cb: Callback) => void
   setSubMessage: (cb: Callback) => void
   clearCache: () => void
+  initializeClientId: () => void
 
   setMessages: (clientId: string, messages: Message[]) => void
 }
 
-export const useCacheStore = create<CacheState>((set) => ({
-  clientId: uuidv4(),
+export const useCacheStore = create<CacheState>((set, get) => ({
+  clientId: '', // Initialize empty to prevent hydration mismatch
   roomId: null,
   subRoom: null,
   subMessage: null,
@@ -37,10 +38,18 @@ export const useCacheStore = create<CacheState>((set) => ({
   setRoomId: (id) => set({ roomId: id }),
   setSubRoom: (cb) => set({ subRoom: cb }),
   setSubMessage: (cb) => set({ subMessage: cb }),
+
+  initializeClientId: () => {
+    // Only generate clientId on client side to prevent hydration mismatch
+    if (typeof window !== 'undefined' && !get().clientId) {
+      set({ clientId: uuidv4() })
+    }
+  },
+
   clearCache: () => {
     console.log('CacheStore - clearCache called')
     set({
-      clientId: uuidv4(),
+      clientId: typeof window !== 'undefined' ? uuidv4() : '',
       roomId: null,
       subRoom: null,
       subMessage: null
