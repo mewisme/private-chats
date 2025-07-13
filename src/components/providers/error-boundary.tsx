@@ -61,7 +61,7 @@ function DefaultErrorFallback({ error, resetError }: { error?: Error; resetError
   const handleRefresh = () => {
     resetError()
     setIsOpen(false)
-    router.refresh()
+    window.location.reload()
   }
 
   const handleGoHome = () => {
@@ -86,12 +86,9 @@ function DefaultErrorFallback({ error, resetError }: { error?: Error; resetError
           </DialogDescription>
         </DialogHeader>
         {error && (
-          <details className="text-sm text-gray-600 dark:text-gray-400">
-            <summary className="cursor-pointer font-medium">Error details</summary>
-            <pre className="mt-2 max-h-32 overflow-auto rounded border p-2 text-xs">
-              {error.message || 'Unknown error'}
-            </pre>
-          </details>
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            {error.message || 'Unknown error'}
+          </span>
         )}
         <DialogFooter>
           <Button onClick={handleRefresh}>
