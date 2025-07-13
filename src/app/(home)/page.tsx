@@ -33,9 +33,7 @@ export default function FindStranger() {
   }, [initializeClientId])
 
   if (!isClient) {
-    return (
-      <LoadingPage isChild />
-    )
+    return <LoadingPage isChild />
   }
 
   const handleFindStranger = async () => {

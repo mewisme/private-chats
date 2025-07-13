@@ -1,11 +1,13 @@
 import {
   addDoc,
   collection,
+  doc,
   limit,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
   where
 } from 'firebase/firestore'
 
@@ -25,12 +27,18 @@ export async function sendMessage(roomId: string, senderId: string, text: string
   }
 
   const messagesRef = collection(db, 'messages')
+  const roomRef = doc(db, 'rooms', roomId)
 
+  // Add the message to the messages collection
   await addDoc(messagesRef, {
     roomId,
     senderId,
     text: text.trim(),
     timestamp: serverTimestamp()
+  })
+
+  await updateDoc(roomRef, {
+    updatedAt: serverTimestamp()
   })
 }
 

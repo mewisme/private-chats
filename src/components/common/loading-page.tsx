@@ -1,15 +1,15 @@
-import { DualLoader } from "../base/dual-loader";
+import { DualLoader } from '../base/dual-loader'
 
 interface LoadingPageProps {
-  isChild?: boolean;
+  isChild?: boolean
 }
 
 export function LoadingPage({ isChild = false }: LoadingPageProps) {
-  const loader = <DualLoader />;
+  const loader = <DualLoader />
 
-  return isChild ? loader : (
-    <div className="flex min-h-screen items-center justify-center">
-      {loader}
-    </div>
-  );
+  return isChild ? (
+    loader
+  ) : (
+    <div className="flex min-h-screen items-center justify-center">{loader}</div>
+  )
 }

@@ -203,7 +203,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
         document.title = originalTitleRef.current
       }
 
-      const handleBlur = () => { }
+      const handleBlur = () => {}
 
       window.addEventListener('focus', handleFocus)
       window.addEventListener('blur', handleBlur)
@@ -357,15 +357,15 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
 
   const displayMessages: Message[] = isAI
     ? aiMessages.map((msg) => ({
-      id: msg.id,
-      roomId: 'ai',
-      senderId: msg.senderId === 'ai' ? 'ai-assistant' : msg.senderId,
-      text: msg.text,
-      timestamp: {
-        toDate: () => new Date(msg.timestamp),
-        seconds: Math.floor(msg.timestamp / 1000)
-      }
-    }))
+        id: msg.id,
+        roomId: 'ai',
+        senderId: msg.senderId === 'ai' ? 'ai-assistant' : msg.senderId,
+        text: msg.text,
+        timestamp: {
+          toDate: () => new Date(msg.timestamp),
+          seconds: Math.floor(msg.timestamp / 1000)
+        }
+      }))
     : messages
 
   if (!isInitialized) {

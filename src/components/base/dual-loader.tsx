@@ -23,19 +23,19 @@ export function DualLoader() {
         <div
           className="repeat-infinite size-12 rounded-full border-4 border-neutral-700 border-t-transparent ease-in-out dark:invert"
           style={{
-            animationName: "spin",
-            animationDuration: "1.5s",
+            animationName: 'spin',
+            animationDuration: '1.5s'
           }}
         />
         <div
           className="repeat-infinite direction-reverse absolute size-9 rounded-full border-4 border-neutral-700 border-b-transparent ease-in-out dark:invert"
           style={{
-            animationName: "spin",
-            animationDuration: "2s",
+            animationName: 'spin',
+            animationDuration: '2s'
           }}
         />
         <span className="sr-only">Loading...</span>
       </div>
     </>
-  );
+  )
 }

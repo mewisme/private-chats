@@ -1,0 +1,48 @@
+name: Daily Cleanup Job
+
+on:
+  schedule:
+    # Runs daily at 00:00 UTC
+    - cron: "0 0 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5 # Limit to 5 minutes for free plan optimization
+    steps:
+      - name: Health Check
+        run: |
+          echo "Checking API health..."
+          curl -f -w "HTTP Status: %{http_code}\n" -s "${{ secrets.CLEANUP_URL }}/api/cleanup" || exit 1
+        env:
+          CLEANUP_URL: ${{ secrets.CLEANUP_URL }}
+
+      - name: Trigger Cleanup API
+        run: |
+          echo "Starting cleanup job..."
+          curl -X POST \
+            -H "x-cron-secret: ${{ secrets.SERVER_CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -w "HTTP Status: %{http_code}\n" \
+            -s \
+            --max-time 300 \
+            "${{ secrets.CLEANUP_URL }}/api/cleanup"
+        env:
+          SERVER_CRON_SECRET: ${{ secrets.SERVER_CRON_SECRET }}
+          CLEANUP_URL: ${{ secrets.CLEANUP_URL }}
+
+      - name: Test Dry Run
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "Running dry-run test..."
+          curl -X POST \
+            -H "x-cron-secret: ${{ secrets.SERVER_CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -w "HTTP Status: %{http_code}\n" \
+            -s \
+            --max-time 120 \
+            "${{ secrets.CLEANUP_URL }}/api/cleanup?dry-run=true"
+        env:
+          SERVER_CRON_SECRET: ${{ secrets.SERVER_CRON_SECRET }}
+          CLEANUP_URL: ${{ secrets.CLEANUP_URL }}
