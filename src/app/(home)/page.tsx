@@ -1,17 +1,19 @@
 'use client'
 
 import { BotMessageSquare, MessageCircle, Users } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
-
-import { Loading } from '@/components/common/loading'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useEffect, useState } from 'react'
+
+import { Button } from '@/components/ui/button'
+import { Loading } from '@/components/common/loading'
+import { Logger } from '@/utils/logger'
+import { findOrCreateRoom } from '@/lib/room'
+import { toast } from 'sonner'
 import { useCacheStore } from '@/hooks/use-cache-store'
 import { useIsClient } from '@/hooks/use-client'
+import { useRouteSync } from '@/hooks/use-multi-tab-sync'
+import { useRouter } from 'next/navigation'
 import { useSettings } from '@/hooks/use-settings'
-import { findOrCreateRoom } from '@/lib/room'
 
 export default function FindStranger() {
   const isClient = useIsClient()
@@ -21,13 +23,14 @@ export default function FindStranger() {
   const router = useRouter()
   const { clientId, setRoomId, initializeClientId } = useCacheStore()
   const { settings } = useSettings()
+  const { navigateAndSync } = useRouteSync()
 
   useEffect(() => {
     try {
       initializeClientId()
       setIsInitialized(true)
     } catch (error) {
-      console.error('Failed to initialize client ID:', error)
+      Logger.error('Failed to initialize client ID:', error)
       setError('Failed to initialize client session')
     }
   }, [initializeClientId])
@@ -47,9 +50,9 @@ export default function FindStranger() {
       const roomId = await findOrCreateRoom(clientId)
       setRoomId(roomId)
       toast.success('Connecting to chat room...')
-      router.push(`/chat/${roomId}`)
+      navigateAndSync(`/chat/${roomId}`)
     } catch (error) {
-      console.error('Error finding a chat room', error)
+      Logger.error('Error finding a chat room', error)
       toast.error('Failed to find a chat room. Please try again.')
     } finally {
       setIsSearching(false)
@@ -58,7 +61,7 @@ export default function FindStranger() {
 
   const handleWithAI = async () => {
     toast.success('Starting chat with AI...')
-    router.push('/chat/ai')
+    navigateAndSync('/chat/ai')
   }
 
   if (!isInitialized) {

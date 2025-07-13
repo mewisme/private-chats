@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
+import { Logger } from '@/utils/logger'
+
 interface NotificationOptions {
   title: string
   body: string
@@ -19,7 +21,7 @@ export function useNotifications() {
 
   const requestPermission = useCallback(async (): Promise<NotificationPermission> => {
     if (typeof window === 'undefined' || !('Notification' in window)) {
-      console.warn('This browser does not support notifications')
+      Logger.warn('This browser does not support notifications')
       return 'denied'
     }
 
@@ -35,7 +37,7 @@ export function useNotifications() {
   const showNotification = useCallback(
     async (options: NotificationOptions): Promise<void> => {
       if (typeof window === 'undefined' || !('Notification' in window)) {
-        console.warn('This browser does not support notifications')
+        Logger.warn('This browser does not support notifications')
         return
       }
 

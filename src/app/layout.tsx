@@ -1,12 +1,11 @@
 import '@/styles/globals.css'
 
-import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 
-import { StarsBackground } from '@/components/animate-ui/backgrounds/stars'
-import { Header } from '@/components/common/app-header'
+import { Analytics } from '@vercel/analytics/next'
 import { ErrorBoundary } from '@/components/providers/error-boundary'
+import { Header } from '@/components/common/app-header'
+import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/utils'
@@ -93,7 +92,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             enableSystem
             disableTransitionOnChange
           >
-            <StarsBackground className="absolute -z-50 flex h-full items-center justify-center rounded-xl" />
             <Header />
             <div className="h-dvh w-full">{children}</div>
             <Toaster />

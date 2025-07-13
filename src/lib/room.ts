@@ -14,6 +14,7 @@ import {
   writeBatch
 } from 'firebase/firestore'
 
+import { Logger } from '@/utils/logger'
 import { db } from './firebase'
 
 export interface Room {
@@ -106,7 +107,7 @@ export async function leaveRoom(roomId: string, clientId: string): Promise<void>
       })
     }
   } catch (error) {
-    console.log(error)
+    Logger.log(error)
   }
 }
 

@@ -1,15 +1,5 @@
 'use client'
 
-import { LogOut } from 'lucide-react'
-import { usePathname, useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { toast } from 'sonner'
-
-import { useCacheStore } from '@/hooks/use-cache-store'
-import { useIsClient } from '@/hooks/use-client'
-import { useSettings } from '@/hooks/use-settings'
-import { leaveRoom } from '@/lib/room'
-
 import {
   Dialog,
   DialogBackdrop,
@@ -19,8 +9,18 @@ import {
   DialogPanel,
   DialogTitle
 } from '../animate-ui/headless/dialog'
-import { SimpleTooltip } from '../common/simple-tooltip'
+import { usePathname, useRouter } from 'next/navigation'
+
 import { Button } from '../ui/button'
+import { LogOut } from 'lucide-react'
+import { SimpleTooltip } from '../common/simple-tooltip'
+import { leaveRoom } from '@/lib/room'
+import { toast } from 'sonner'
+import { useCacheStore } from '@/hooks/use-cache-store'
+import { useIsClient } from '@/hooks/use-client'
+import { useRouteSync } from '@/hooks/use-multi-tab-sync'
+import { useSettings } from '@/hooks/use-settings'
+import { useState } from 'react'
 
 interface ChatLeaveButtonProps {
   onLeave?: () => void
@@ -34,6 +34,7 @@ export function ChatLeaveButton({ onLeaveAI, onLeave }: ChatLeaveButtonProps) {
   const pathname = usePathname()
   const { clientId, roomId, clearCache } = useCacheStore()
   const { settings, updateSetting } = useSettings()
+  const { navigateAndSync } = useRouteSync()
 
   if (!isClient) {
     return null
@@ -65,10 +66,9 @@ export function ChatLeaveButton({ onLeaveAI, onLeave }: ChatLeaveButtonProps) {
       }
     } finally {
       setIsOpen(false)
-      router.push('/')
+      navigateAndSync('/')
       onLeave?.()
       onLeaveAI?.()
-      router.push('/')
     }
   }
 

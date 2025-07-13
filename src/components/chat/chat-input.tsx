@@ -1,16 +1,16 @@
 'use client'
 
-import { Send } from 'lucide-react'
 import { RefObject, useCallback, useEffect, useRef } from 'react'
-
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { useCacheStore } from '@/hooks/use-cache-store'
-import { useIsClient } from '@/hooks/use-client'
-import { useHydratedSettings } from '@/hooks/use-settings'
 import { clearRoomTypingStatus, updateRoomTypingStatus } from '@/lib/typing'
 
+import { Button } from '@/components/ui/button'
 import { ChatEmoji } from './chat-emoji'
+import { Logger } from '@/utils/logger'
+import { Send } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea'
+import { useCacheStore } from '@/hooks/use-cache-store'
+import { useHydratedSettings } from '@/hooks/use-settings'
+import { useIsClient } from '@/hooks/use-client'
 
 interface ChatInputProps {
   inputRef: RefObject<HTMLTextAreaElement | null>
@@ -115,7 +115,7 @@ export function ChatInput({
   }, [roomId, clientId, isAI])
 
   useEffect(() => {
-    console.log('allowEmoji changed:', settings.allowEmoji)
+    Logger.log('allowEmoji changed:', settings.allowEmoji)
   }, [settings.allowEmoji])
 
   if (!isClient) {

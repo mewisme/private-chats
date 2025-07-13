@@ -1,9 +1,6 @@
 'use client'
 
 import { AlertTriangle, RefreshCw } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
-
 import {
   Dialog,
   DialogBackdrop,
@@ -13,7 +10,11 @@ import {
   DialogPanel,
   DialogTitle
 } from '@/components/animate-ui/headless/dialog'
+import React, { useState } from 'react'
+
 import { Button } from '@/components/ui/button'
+import { Logger } from '@/utils/logger'
+import { useRouter } from 'next/navigation'
 
 interface ErrorBoundaryState {
   hasError: boolean
@@ -36,7 +37,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo)
+    Logger.error('Error caught by boundary:', error, errorInfo)
   }
 
   resetError = () => {

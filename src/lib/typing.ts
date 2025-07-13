@@ -1,5 +1,6 @@
 import { deleteDoc, doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore'
 
+import { Logger } from '@/utils/logger'
 import { db } from './firebase'
 
 export interface TypingStatus {
@@ -16,7 +17,7 @@ export async function setTypingStatus(roomId: string, userId: string): Promise<v
       timestamp: serverTimestamp()
     })
   } catch (error) {
-    console.error('Error setting typing status:', error)
+    Logger.error('Error setting typing status:', error)
   }
 }
 
@@ -25,7 +26,7 @@ export async function clearTypingStatus(roomId: string, userId: string): Promise
     const typingRef = doc(db, 'typing', `${roomId}_${userId}`)
     await deleteDoc(typingRef)
   } catch (error) {
-    console.error('Error clearing typing status:', error)
+    Logger.error('Error clearing typing status:', error)
   }
 }
 
@@ -66,7 +67,7 @@ export function listenToTypingStatus(
       }
     },
     (error) => {
-      console.error('Error listening to typing status:', error)
+      Logger.error('Error listening to typing status:', error)
       callback(false)
     }
   )
@@ -85,7 +86,7 @@ export async function updateRoomTypingStatus(roomId: string, userId: string): Pr
       { merge: true }
     )
   } catch (error) {
-    console.error('Error updating room typing status:', error)
+    Logger.error('Error updating room typing status:', error)
   }
 }
 
@@ -100,6 +101,6 @@ export async function clearRoomTypingStatus(roomId: string, userId: string): Pro
       { merge: true }
     )
   } catch (error) {
-    console.error('Error clearing room typing status:', error)
+    Logger.error('Error clearing room typing status:', error)
   }
 }

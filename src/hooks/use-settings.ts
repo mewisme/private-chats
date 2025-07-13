@@ -1,5 +1,7 @@
+import { PersistOptions, persist } from 'zustand/middleware'
+
+import { Logger } from '@/utils/logger'
 import { create } from 'zustand'
-import { persist, PersistOptions } from 'zustand/middleware'
 
 export type Settings = {
   allowMarkdown: boolean
@@ -21,6 +23,25 @@ type SettingsState = {
   updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void
   resetSettings: () => void
   setHydrated: () => void
+  syncSettingsFromOtherTab: (settings: Settings) => void
+}
+
+const broadcastSettingsChange = (settings: Settings) => {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(
+        'private-chats-sync-event',
+        JSON.stringify({
+          type: 'SETTINGS_CHANGE',
+          settings,
+          timestamp: Date.now()
+        })
+      )
+      localStorage.removeItem('private-chats-sync-event')
+    } catch (error) {
+      Logger.error('Failed to broadcast settings change:', error)
+    }
+  }
 }
 
 const persistOptions: PersistOptions<SettingsState, Partial<SettingsState>> = {
@@ -41,25 +62,44 @@ export const useSettings = create<SettingsState>()(
       isHydrated: false,
       updateSetting: (key, value) => {
         try {
+          const newSettings = { ...get().settings, [key]: value }
           set((state) => ({
-            settings: { ...state.settings, [key]: value }
+            settings: newSettings
           }))
+          broadcastSettingsChange(newSettings)
         } catch (error) {
-          console.error('Failed to update setting:', error)
+          Logger.error('Failed to update setting:', error)
         }
       },
       resetSettings: () => {
         try {
           set({ settings: DEFAULT_SETTINGS })
+          broadcastSettingsChange(DEFAULT_SETTINGS)
         } catch (error) {
-          console.error('Failed to reset settings:', error)
+          Logger.error('Failed to reset settings:', error)
         }
       },
-      setHydrated: () => set({ isHydrated: true })
+      setHydrated: () => set({ isHydrated: true }),
+
+      syncSettingsFromOtherTab: (settings) => {
+        try {
+          set({ settings })
+        } catch (error) {
+          Logger.error('Failed to sync settings from other tab:', error)
+        }
+      }
     }),
     persistOptions
   )
 )
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('settings-sync', (event: Event) => {
+    const customEvent = event as CustomEvent
+    const settingsStore = useSettings.getState()
+    settingsStore.syncSettingsFromOtherTab(customEvent.detail)
+  })
+}
 
 export function useHydratedSettings() {
   const store = useSettings()
