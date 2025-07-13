@@ -18,7 +18,7 @@ export function Header() {
         <div className="space-x-2">
           <SettingsDialog />
           <ThemeToggle />
-          <Link href={'https://github.com/mewisme/private-chats'} target='_blank'>
+          <Link href={'https://github.com/mewisme/private-chats'} target="_blank">
             <Button variant={'outline'} size={'icon'}>
               <Github />
             </Button>

@@ -12,7 +12,6 @@ export function useNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default')
 
   useEffect(() => {
-    // Only run on client side
     if (typeof window !== 'undefined' && 'Notification' in window) {
       setPermission(Notification.permission)
     }

@@ -7,7 +7,6 @@ export interface TypingStatus {
   timestamp: any
 }
 
-// Set user typing status
 export async function setTypingStatus(roomId: string, userId: string): Promise<void> {
   try {
     const typingRef = doc(db, 'typing', `${roomId}_${userId}`)
@@ -21,7 +20,6 @@ export async function setTypingStatus(roomId: string, userId: string): Promise<v
   }
 }
 
-// Clear user typing status
 export async function clearTypingStatus(roomId: string, userId: string): Promise<void> {
   try {
     const typingRef = doc(db, 'typing', `${roomId}_${userId}`)
@@ -31,17 +29,11 @@ export async function clearTypingStatus(roomId: string, userId: string): Promise
   }
 }
 
-// Listen to typing status for a room (detects other users typing)
 export function listenToTypingStatus(
   roomId: string,
   currentUserId: string,
   callback: (isTyping: boolean) => void
 ): () => void {
-  // Create a simple listener that checks for any typing document in this room
-  // that doesn't belong to the current user
-
-  // For simplicity, let's assume there are only 2 users max in a room
-  // We'll listen to a general typing status document for the room
   const typingRef = doc(db, 'typing', `${roomId}_status`)
 
   return onSnapshot(
@@ -50,7 +42,6 @@ export function listenToTypingStatus(
       if (snapshot.exists()) {
         const data = snapshot.data()
 
-        // Check if anyone other than current user is typing
         let someoneElseTyping = false
 
         for (const [userId, typingData] of Object.entries(data)) {
@@ -81,7 +72,6 @@ export function listenToTypingStatus(
   )
 }
 
-// Update room typing status (for multi-user support)
 export async function updateRoomTypingStatus(roomId: string, userId: string): Promise<void> {
   try {
     const typingRef = doc(db, 'typing', `${roomId}_status`)
@@ -99,14 +89,13 @@ export async function updateRoomTypingStatus(roomId: string, userId: string): Pr
   }
 }
 
-// Clear user from room typing status
 export async function clearRoomTypingStatus(roomId: string, userId: string): Promise<void> {
   try {
     const typingRef = doc(db, 'typing', `${roomId}_status`)
     await setDoc(
       typingRef,
       {
-        [userId]: null // Remove the user's typing status
+        [userId]: null
       },
       { merge: true }
     )

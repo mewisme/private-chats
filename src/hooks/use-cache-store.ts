@@ -40,9 +40,11 @@ export const useCacheStore = create<CacheState>((set, get) => ({
   setSubMessage: (cb) => set({ subMessage: cb }),
 
   initializeClientId: () => {
-    // Only generate clientId on client side to prevent hydration mismatch
     if (typeof window !== 'undefined' && !get().clientId) {
       set({ clientId: uuidv4() })
+    } else {
+      const randomString = Math.random().toString(36).substring(2, 15)
+      set({ clientId: randomString })
     }
   },
 

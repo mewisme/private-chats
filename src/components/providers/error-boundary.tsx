@@ -1,10 +1,18 @@
 'use client'
 
 import { AlertTriangle, RefreshCw } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogTitle
+} from '@/components/animate-ui/headless/dialog'
+import React, { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
-import React from 'react'
 import { useRouter } from 'next/navigation'
 
 interface ErrorBoundaryState {
@@ -47,49 +55,53 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
 function DefaultErrorFallback({ error, resetError }: { error?: Error; resetError: () => void }) {
   const router = useRouter()
+  const [isOpen, setIsOpen] = useState(true)
 
   const handleRefresh = () => {
     resetError()
+    setIsOpen(false)
     router.refresh()
   }
 
   const handleGoHome = () => {
     resetError()
+    setIsOpen(false)
     router.push('/')
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-            <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
-          </div>
-          <CardTitle>Something went wrong</CardTitle>
-          <CardDescription>
+    <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+      <DialogBackdrop />
+      <DialogPanel>
+        <DialogHeader>
+          <DialogTitle>
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
+              <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
+            </div>
+            Something went wrong
+          </DialogTitle>
+          <DialogDescription>
             We encountered an error while loading this page. This might be a temporary issue.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {error && (
-            <details className="text-sm text-gray-600 dark:text-gray-400">
-              <summary className="cursor-pointer font-medium">Error details</summary>
-              <pre className="mt-2 max-h-32 overflow-auto rounded border p-2 text-xs">
-                {error.message || 'Unknown error'}
-              </pre>
-            </details>
-          )}
-          <div className="flex gap-2">
-            <Button onClick={handleRefresh} className="flex-1">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Try Again
-            </Button>
-            <Button variant="outline" onClick={handleGoHome} className="flex-1">
-              Go Home
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </DialogDescription>
+        </DialogHeader>
+        {error && (
+          <details className="text-sm text-gray-600 dark:text-gray-400">
+            <summary className="cursor-pointer font-medium">Error details</summary>
+            <pre className="mt-2 max-h-32 overflow-auto rounded border p-2 text-xs">
+              {error.message || 'Unknown error'}
+            </pre>
+          </details>
+        )}
+        <DialogFooter>
+          <Button onClick={handleRefresh}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Try Again
+          </Button>
+          <Button variant="outline" onClick={handleGoHome} className="flex-1">
+            Go Home
+          </Button>
+        </DialogFooter>
+      </DialogPanel>
+    </Dialog>
   )
-} 
+}

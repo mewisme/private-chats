@@ -10,10 +10,12 @@ import { usePathname, useRouter } from 'next/navigation'
 import { ChatInput } from './chat-input'
 import { ChatLeaveButton } from './chat-leave'
 import { ChatMessageList } from './chat-message-list'
+import { LoadingPage } from '../common/loading-page'
 import { cn } from '@/utils'
 import { toast } from 'sonner'
 import { useCacheStore } from '@/hooks/use-cache-store'
 import { useHydratedSettings } from '@/hooks/use-settings'
+import { useIsClient } from '@/hooks/use-client'
 import { useNotifications } from '@/hooks/use-notifications'
 
 interface ChatRoomProps {
@@ -28,6 +30,7 @@ interface AIMessage {
 }
 
 export default function ChatRoom({ roomId }: ChatRoomProps) {
+  const isClient = useIsClient()
   const [messages, setMessages] = useState<Message[]>([])
   const [aiMessages, setAiMessages] = useState<AIMessage[]>([])
   const [newMessage, setNewMessage] = useState('')
@@ -48,24 +51,30 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
   const originalTitleRef = useRef<string>('')
   const router = useRouter()
   const pathname = usePathname()
-  const { clientId, roomId: cacheRoomId, setSubRoom, setSubMessage, clearCache, initializeClientId } = useCacheStore()
+  const {
+    clientId,
+    roomId: cacheRoomId,
+    setSubRoom,
+    setSubMessage,
+    clearCache,
+    initializeClientId
+  } = useCacheStore()
   const { showNotification, requestPermission } = useNotifications()
-  const { updateSetting } = useHydratedSettings()
 
   const isAI = pathname.startsWith('/chat/ai')
 
-  // Initialize client ID on mount
   useEffect(() => {
     try {
-      initializeClientId()
+      if (!clientId) {
+        initializeClientId()
+      }
       setIsInitialized(true)
     } catch (error) {
       console.error('Failed to initialize client ID:', error)
       setError('Failed to initialize chat session')
     }
-  }, [initializeClientId])
+  }, [initializeClientId, clientId])
 
-  // Main chat setup effect
   useEffect(() => {
     if (!isInitialized || !clientId) return
 
@@ -159,13 +168,10 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     }
   }, [roomId, router, isAI, clientId, showNotification, isInitialized])
 
-  // Mobile-safe auto focus
   useEffect(() => {
     if (isConnected && typeof window !== 'undefined') {
-      // Delay focus for mobile compatibility
       const timer = setTimeout(() => {
         try {
-          // Only focus if user hasn't manually focused elsewhere
           if (document.activeElement === document.body) {
             inputRef.current?.focus()
           }
@@ -258,6 +264,10 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     }
   }, [roomId, clientId, isAI])
 
+  if (!isClient) {
+    return <LoadingPage />
+  }
+
   const sendAIMessage = async (userMessage: string) => {
     setIsAIThinking(true)
 
@@ -328,7 +338,6 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     } finally {
       setIsSending(false)
 
-      // Mobile-safe focus restore
       setTimeout(() => {
         try {
           inputRef.current?.focus()
@@ -359,7 +368,6 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     }))
     : messages
 
-  // Show loading state while initializing
   if (!isInitialized) {
     return (
       <div className="mt-10 flex min-h-screen items-center justify-center p-4 lg:mt-0">
@@ -373,7 +381,6 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     )
   }
 
-  // Show error state
   if (error) {
     return (
       <div className="mt-10 flex min-h-screen items-center justify-center p-4 lg:mt-0">

@@ -3,12 +3,13 @@
 import { RefObject, useCallback, useEffect, useRef } from 'react'
 import { clearRoomTypingStatus, updateRoomTypingStatus } from '@/lib/typing'
 
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 import { ChatEmoji } from './chat-emoji'
 import { Send } from 'lucide-react'
-import { Textarea } from '../ui/textarea'
+import { Textarea } from '@/components/ui/textarea'
 import { useCacheStore } from '@/hooks/use-cache-store'
 import { useHydratedSettings } from '@/hooks/use-settings'
+import { useIsClient } from '@/hooks/use-client'
 
 interface ChatInputProps {
   inputRef: RefObject<HTMLTextAreaElement | null>
@@ -33,12 +34,12 @@ export function ChatInput({
   roomId,
   isAI = false
 }: ChatInputProps) {
+  const isClient = useIsClient()
   const { settings } = useHydratedSettings()
   const { clientId } = useCacheStore()
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isTypingRef = useRef(false)
 
-  // Debounced typing indicator for stranger chat
   const handleTypingStart = useCallback(async () => {
     if (isAI || !roomId || !clientId || !isConnected) return
 
@@ -47,18 +48,16 @@ export function ChatInput({
       await updateRoomTypingStatus(roomId, clientId)
     }
 
-    // Clear existing timeout
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current)
     }
 
-    // Set new timeout to clear typing status
     typingTimeoutRef.current = setTimeout(async () => {
       if (isTypingRef.current) {
         isTypingRef.current = false
         await clearRoomTypingStatus(roomId, clientId)
       }
-    }, 2000) // Clear typing status after 2 seconds of no activity
+    }, 2000)
   }, [isAI, roomId, clientId, isConnected])
 
   const handleTypingStop = useCallback(async () => {
@@ -79,7 +78,6 @@ export function ChatInput({
       const value = e.target.value
       setNewMessage(value)
 
-      // Trigger typing indicator for stranger chat
       if (value.trim() && !isAI) {
         handleTypingStart()
       } else if (!value.trim()) {
@@ -90,7 +88,6 @@ export function ChatInput({
   )
 
   const enhancedHandleSendMessage = useCallback(() => {
-    // Clear typing status when sending message
     handleTypingStop()
     handleSendMessage()
   }, [handleTypingStop, handleSendMessage])
@@ -105,7 +102,6 @@ export function ChatInput({
     [handleTypingStop, handleKeyPress]
   )
 
-  // Cleanup typing status on unmount or when leaving
   useEffect(() => {
     return () => {
       if (typingTimeoutRef.current) {
@@ -120,6 +116,10 @@ export function ChatInput({
   useEffect(() => {
     console.log('allowEmoji changed:', settings.allowEmoji)
   }, [settings.allowEmoji])
+
+  if (!isClient) {
+    return null
+  }
 
   return (
     <>

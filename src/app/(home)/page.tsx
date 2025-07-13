@@ -2,20 +2,41 @@
 
 import { BotMessageSquare, MessageCircle, Users } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { LoadingPage } from '@/components/common/loading-page'
 import { findOrCreateRoom } from '@/lib/room'
 import { toast } from 'sonner'
 import { useCacheStore } from '@/hooks/use-cache-store'
+import { useIsClient } from '@/hooks/use-client'
 import { useRouter } from 'next/navigation'
 import { useSettings } from '@/hooks/use-settings'
-import { useState } from 'react'
 
 export default function FindStranger() {
+  const isClient = useIsClient()
   const [isSearching, setIsSearching] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
-  const { clientId, setRoomId } = useCacheStore()
+  const { clientId, setRoomId, initializeClientId } = useCacheStore()
   const { settings } = useSettings()
+
+  useEffect(() => {
+    try {
+      initializeClientId()
+      setIsInitialized(true)
+    } catch (error) {
+      console.error('Failed to initialize client ID:', error)
+      setError('Failed to initialize client session')
+    }
+  }, [initializeClientId])
+
+  if (!isClient) {
+    return (
+      <LoadingPage isChild />
+    )
+  }
 
   const handleFindStranger = async () => {
     setIsSearching(true)
@@ -30,6 +51,7 @@ export default function FindStranger() {
       toast.success('Connecting to chat room...')
       router.push(`/chat/${roomId}`)
     } catch (error) {
+      console.error('Error finding a chat room', error)
       toast.error('Failed to find a chat room. Please try again.')
     } finally {
       setIsSearching(false)
@@ -39,6 +61,31 @@ export default function FindStranger() {
   const handleWithAI = async () => {
     toast.success('Starting chat with AI...')
     router.push(`/chat/ai`)
+  }
+
+  if (!isInitialized) {
+    return <LoadingPage />
+  }
+
+  if (error) {
+    return (
+      <div className="mt-10 flex min-h-dvh items-center justify-center p-4 lg:mt-0">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <h2 className="text-lg font-semibold text-red-600">Initialization Error</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{error}</p>
+          </CardHeader>
+          <CardContent>
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            >
+              Retry
+            </button>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (
@@ -62,12 +109,21 @@ export default function FindStranger() {
               <h3 className="mb-3 text-sm font-semibold text-black dark:text-white">
                 How it works:
               </h3>
-              <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
-                <li>• Click "Find Stranger" to search for someone to chat with</li>
-                <li>• If someone is waiting, you'll join their room instantly</li>
-                <li>• Otherwise, you'll wait for someone to find you</li>
-                <li>• Your conversation is completely anonymous</li>
-              </ul>
+              {settings.aiMode ? (
+                <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+                  <li>• Click "Chat with AI" to start a conversation with our AI assistant</li>
+                  <li>• Ask questions, get help, or have a casual conversation</li>
+                  <li>• The AI responds instantly and can help with various topics</li>
+                  <li>• Your conversation history is private and secure</li>
+                </ul>
+              ) : (
+                <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+                  <li>• Click "Find Stranger" to search for someone to chat with</li>
+                  <li>• If someone is waiting, you'll join their room instantly</li>
+                  <li>• Otherwise, you'll wait for someone to find you</li>
+                  <li>• Your conversation is completely anonymous</li>
+                </ul>
+              )}
             </CardContent>
           </Card>
 

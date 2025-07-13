@@ -62,11 +62,9 @@ export const useSettings = create<SettingsState>()(
   )
 )
 
-// Helper hook to ensure settings are hydrated before use
 export function useHydratedSettings() {
   const store = useSettings()
 
-  // Rehydrate on first client-side render
   if (typeof window !== 'undefined' && !store.isHydrated) {
     useSettings.persist.rehydrate()
   }

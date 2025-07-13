@@ -17,6 +17,7 @@ import { SimpleTooltip } from '../common/simple-tooltip'
 import { leaveRoom } from '@/lib/room'
 import { toast } from 'sonner'
 import { useCacheStore } from '@/hooks/use-cache-store'
+import { useIsClient } from '@/hooks/use-client'
 import { useSettings } from '@/hooks/use-settings'
 import { useState } from 'react'
 
@@ -26,11 +27,17 @@ interface ChatLeaveButtonProps {
 }
 
 export function ChatLeaveButton({ onLeaveAI, onLeave }: ChatLeaveButtonProps) {
+  const isClient = useIsClient()
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
   const { clientId, roomId, clearCache } = useCacheStore()
   const { settings, updateSetting } = useSettings()
-  const pathname = usePathname()
+
+  if (!isClient) {
+    return null
+  }
+
   const isChatPage = pathname.startsWith('/chat')
 
   const handleLeaveChat = async () => {
@@ -66,7 +73,7 @@ export function ChatLeaveButton({ onLeaveAI, onLeave }: ChatLeaveButtonProps) {
 
   return (
     <>
-      {((roomId && isChatPage) || (settings.aiMode)) && (
+      {((roomId && isChatPage) || settings.aiMode) && (
         <SimpleTooltip message="Leave Chat">
           <Button onClick={() => setIsOpen(true)} variant="destructive" size="icon">
             <LogOut className="h-[1.2rem] w-[1.2rem]" />
