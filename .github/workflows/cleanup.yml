@@ -5,6 +5,10 @@ on:
     # Runs daily at 00:00 UTC
     - cron: "0 0 * * *"
   workflow_dispatch: # Allow manual trigger
+  push:
+    branches: [main, master] # Add push trigger for main branches
+  pull_request:
+    branches: [main, master] # Optional: also run on PRs
 
 jobs:
   cleanup:
@@ -19,6 +23,7 @@ jobs:
           CLEANUP_URL: ${{ secrets.CLEANUP_URL }}
 
       - name: Trigger Cleanup API
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           echo "Starting cleanup job..."
           curl -X POST \
@@ -33,7 +38,7 @@ jobs:
           CLEANUP_URL: ${{ secrets.CLEANUP_URL }}
 
       - name: Test Dry Run
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event_name == 'pull_request'
         run: |
           echo "Running dry-run test..."
           curl -X POST \
