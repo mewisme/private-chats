@@ -1,4 +1,3 @@
-// ANSI color codes for console output
 const Colors = {
   Reset: '\x1b[0m',
   Red: '\x1b[31m',
@@ -23,14 +22,12 @@ export class Logger {
     const prefix = `${color}[${timestamp}] ${level}:${Colors.Reset}`
 
     if (typeof window !== 'undefined') {
-      // Browser environment - use regular console methods with styling
       console.log(
         `%c[${timestamp}] ${level}:`,
         `color: ${this.getBrowserColor(color)}`,
         ...messages
       )
     } else {
-      // Node.js environment - use ANSI colors
       console.log(prefix, ...messages)
     }
   }

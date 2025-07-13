@@ -70,7 +70,7 @@ export default function FindStranger() {
 
   if (error) {
     return (
-      <div className="mt-10 flex min-h-dvh items-center justify-center p-4 lg:mt-0">
+      <div className="flex min-h-[calc(100dvh-100px)] items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader>
             <h2 className="text-lg font-semibold text-red-600">Initialization Error</h2>
@@ -90,7 +90,7 @@ export default function FindStranger() {
   }
 
   return (
-    <div className="mt-10 flex min-h-dvh items-center justify-center p-4 lg:mt-0">
+    <div className="flex min-h-[calc(100dvh-100px)] items-center justify-center px-4 py-2">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
@@ -106,7 +106,7 @@ export default function FindStranger() {
 
         <CardContent className="space-y-6">
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-2">
               <h3 className="mb-3 text-sm font-semibold text-black dark:text-white">
                 How it works:
               </h3>
@@ -114,7 +114,6 @@ export default function FindStranger() {
                 <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
                   <li>• Click "Chat with AI" to start a conversation with our AI assistant</li>
                   <li>• Ask questions, get help, or have a casual conversation</li>
-                  <li>• The AI responds instantly and can help with various topics</li>
                   <li>• Your conversation history is private and secure</li>
                 </ul>
               ) : (
@@ -122,7 +121,6 @@ export default function FindStranger() {
                   <li>• Click "Find Stranger" to search for someone to chat with</li>
                   <li>• If someone is waiting, you'll join their room instantly</li>
                   <li>• Otherwise, you'll wait for someone to find you</li>
-                  <li>• Your conversation is completely anonymous</li>
                 </ul>
               )}
             </CardContent>

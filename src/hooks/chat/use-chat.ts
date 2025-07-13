@@ -26,7 +26,7 @@ export function useChat(roomId: string) {
   const [isAIThinking, setIsAIThinking] = useState(false)
 
   const previousMessagesRef = useRef<Message[]>([])
-  const { clientId, setSubMessage } = useCacheStore()
+  const { clientId } = useCacheStore()
   const { sendEvent } = useMultiTabSync()
 
   const isAI = pathname.startsWith('/chat/ai')
@@ -45,12 +45,11 @@ export function useChat(roomId: string) {
     }
 
     const unsubMessages = listenToMessages(roomId, handleMessagesUpdate)
-    setSubMessage(unsubMessages)
 
     return () => {
       unsubMessages?.()
     }
-  }, [roomId, isAI, clientId, setSubMessage])
+  }, [roomId, isAI, clientId])
 
   useEffect(() => {
     if (!isAI) return
@@ -214,15 +213,15 @@ export function useChat(roomId: string) {
 
   const displayMessages: Message[] = isAI
     ? aiMessages.map((msg) => ({
-      id: msg.id,
-      roomId: 'ai',
-      senderId: msg.senderId === 'ai' ? 'ai-assistant' : msg.senderId,
-      text: msg.text,
-      timestamp: {
-        toDate: () => new Date(msg.timestamp),
-        seconds: Math.floor(msg.timestamp / 1000)
-      }
-    }))
+        id: msg.id,
+        roomId: 'ai',
+        senderId: msg.senderId === 'ai' ? 'ai-assistant' : msg.senderId,
+        text: msg.text,
+        timestamp: {
+          toDate: () => new Date(msg.timestamp),
+          seconds: Math.floor(msg.timestamp / 1000)
+        }
+      }))
     : messages
 
   return {

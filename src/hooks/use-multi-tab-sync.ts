@@ -14,55 +14,132 @@ export type SyncEvent =
   | { type: 'SETTINGS_CHANGE'; settings: any; timestamp: number }
   | { type: 'CACHE_CHANGE'; cacheData: any; timestamp: number }
 
+// Singleton channel manager
+class ChannelManager {
+  private static instance: ChannelManager
+  private channel: BroadcastChannel | null = null
+  private isInitialized = false
+  private initializationPromise: Promise<void> | null = null
+
+  static getInstance(): ChannelManager {
+    if (!ChannelManager.instance) {
+      ChannelManager.instance = new ChannelManager()
+    }
+    return ChannelManager.instance
+  }
+
+  async initialize(): Promise<void> {
+    if (this.isInitialized) return
+    if (this.initializationPromise) return this.initializationPromise
+
+    this.initializationPromise = this.doInitialize()
+    await this.initializationPromise
+  }
+
+  private async doInitialize(): Promise<void> {
+    if (typeof window === 'undefined') return
+    if (this.isInitialized) return
+
+    try {
+      if ('BroadcastChannel' in window && !this.channel) {
+        this.channel = new BroadcastChannel('private-chats-sync')
+        Logger.info('Multi-tab sync: Initialized with BroadcastChannel')
+      } else {
+        Logger.info('Multi-tab sync: Initialized with localStorage fallback')
+      }
+      this.isInitialized = true
+    } catch (error) {
+      Logger.error('Failed to initialize multi-tab sync:', error)
+      this.isInitialized = false
+    }
+  }
+
+  getChannel(): BroadcastChannel | null {
+    return this.channel
+  }
+
+  isReady(): boolean {
+    return this.isInitialized
+  }
+
+  close(): void {
+    if (this.channel) {
+      try {
+        this.channel.close()
+      } catch (error) {
+        Logger.warn('Error closing BroadcastChannel:', error)
+      }
+      this.channel = null
+    }
+    this.isInitialized = false
+    this.initializationPromise = null
+  }
+}
+
 export function useMultiTabSync() {
   const router = useRouter()
   const pathname = usePathname()
-  const channelRef = useRef<BroadcastChannel | null>(null)
+  const channelManager = ChannelManager.getInstance()
   const lastEventRef = useRef<number>(0)
   const isInitializedRef = useRef(false)
+  const navigationThrottleRef = useRef<NodeJS.Timeout | null>(null)
 
-  const initializeChannel = useCallback(() => {
-    if (typeof window === 'undefined' || isInitializedRef.current) return
+  const initializeChannel = useCallback(async () => {
+    if (isInitializedRef.current) return
 
     try {
-      if ('BroadcastChannel' in window) {
-        channelRef.current = new BroadcastChannel('private-chats-sync')
-        Logger.info('Multi-tab sync: Using BroadcastChannel')
-      } else {
-        Logger.info('Multi-tab sync: Using localStorage fallback')
-      }
+      await channelManager.initialize()
       isInitializedRef.current = true
     } catch (error) {
-      Logger.error('Failed to initialize multi-tab sync:', error)
+      Logger.error('Failed to initialize channel manager:', error)
     }
-  }, [])
+  }, [channelManager])
 
-  const sendEvent = useCallback((event: SyncEvent) => {
-    if (typeof window === 'undefined') return
+  const sendEvent = useCallback(
+    (event: SyncEvent) => {
+      if (typeof window === 'undefined') return
 
-    try {
-      const eventWithTimestamp = { ...event, timestamp: Date.now() }
+      try {
+        const eventWithTimestamp = { ...event, timestamp: Date.now() }
 
-      localStorage.setItem('private-chats-sync-event', JSON.stringify(eventWithTimestamp))
-      localStorage.removeItem('private-chats-sync-event')
+        // Always use localStorage fallback for cross-tab communication
+        localStorage.setItem('private-chats-sync-event', JSON.stringify(eventWithTimestamp))
+        localStorage.removeItem('private-chats-sync-event')
 
-      if (channelRef.current && 'BroadcastChannel' in window) {
-        try {
-          channelRef.current.postMessage(eventWithTimestamp)
-        } catch (bcError) {
-          Logger.warn('BroadcastChannel failed, reinitializing:', bcError)
+        // Also try BroadcastChannel if available
+        const channel = channelManager.getChannel()
+        if (channel && 'BroadcastChannel' in window) {
           try {
-            channelRef.current = new BroadcastChannel('private-chats-sync')
-            channelRef.current.postMessage(eventWithTimestamp)
-          } catch (reinitError) {
-            Logger.warn('Failed to reinitialize BroadcastChannel:', reinitError)
+            channel.postMessage(eventWithTimestamp)
+          } catch (bcError: any) {
+            if (
+              bcError instanceof DOMException &&
+              bcError.name === 'InvalidStateError' &&
+              bcError.message.includes('Channel is closed')
+            ) {
+              Logger.warn('BroadcastChannel was closed. Attempting to reinitialize.')
+              try {
+                channelManager.close()
+                channelManager.initialize().then(() => {
+                  const newChannel = channelManager.getChannel()
+                  if (newChannel) {
+                    newChannel.postMessage(eventWithTimestamp)
+                  }
+                })
+              } catch (reinitError) {
+                Logger.error('Failed to reinitialize BroadcastChannel:', reinitError)
+              }
+            } else {
+              Logger.warn('BroadcastChannel failed unexpectedly:', bcError)
+            }
           }
         }
+      } catch (error) {
+        Logger.error('Failed to send multi-tab sync event:', error)
       }
-    } catch (error) {
-      Logger.error('Failed to send multi-tab sync event:', error)
-    }
-  }, [])
+    },
+    [channelManager]
+  )
 
   const handleEvent = useCallback(
     (event: SyncEvent) => {
@@ -71,9 +148,20 @@ export function useMultiTabSync() {
 
       switch (event.type) {
         case 'ROUTE_CHANGE':
+          // Only navigate if we're not already on the target route
           if (pathname !== event.route) {
-            Logger.info('Multi-tab sync: Navigating to', event.route)
-            router.push(event.route)
+            // Throttle navigation to prevent rapid-fire events
+            if (navigationThrottleRef.current) {
+              clearTimeout(navigationThrottleRef.current)
+            }
+
+            navigationThrottleRef.current = setTimeout(() => {
+              // Double-check we're not already on the target route after throttling
+              if (pathname !== event.route) {
+                Logger.info('Multi-tab sync: Navigating to', event.route, 'from', pathname)
+                router.push(event.route)
+              }
+            }, 100)
           }
           break
         case 'MESSAGE_SENT':
@@ -103,35 +191,46 @@ export function useMultiTabSync() {
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    initializeChannel()
+    let cleanup: (() => void) | undefined
 
-    const handleBroadcastMessage = (event: MessageEvent<SyncEvent>) => {
-      handleEvent(event.data)
-    }
+    const setupListeners = async () => {
+      await initializeChannel()
 
-    const handleStorageEvent = (event: StorageEvent) => {
-      if (event.key === 'private-chats-sync-event' && event.newValue) {
-        try {
-          const syncEvent = JSON.parse(event.newValue) as SyncEvent
-          handleEvent(syncEvent)
-        } catch (error) {
-          Logger.error('Failed to parse localStorage sync event:', error)
+      const handleBroadcastMessage = (event: MessageEvent<SyncEvent>) => {
+        handleEvent(event.data)
+      }
+
+      const handleStorageEvent = (event: StorageEvent) => {
+        if (event.key === 'private-chats-sync-event' && event.newValue) {
+          try {
+            const syncEvent = JSON.parse(event.newValue) as SyncEvent
+            handleEvent(syncEvent)
+          } catch (error) {
+            Logger.error('Failed to parse localStorage sync event:', error)
+          }
         }
       }
+
+      const channel = channelManager.getChannel()
+      if (channel) {
+        channel.addEventListener('message', handleBroadcastMessage)
+      }
+      window.addEventListener('storage', handleStorageEvent)
+
+      cleanup = () => {
+        if (channel) {
+          channel.removeEventListener('message', handleBroadcastMessage)
+        }
+        window.removeEventListener('storage', handleStorageEvent)
+      }
     }
 
-    if (channelRef.current) {
-      channelRef.current.addEventListener('message', handleBroadcastMessage)
-    }
-    window.addEventListener('storage', handleStorageEvent)
+    setupListeners()
 
     return () => {
-      if (channelRef.current) {
-        channelRef.current.removeEventListener('message', handleBroadcastMessage)
-      }
-      window.removeEventListener('storage', handleStorageEvent)
+      cleanup?.()
     }
-  }, [handleEvent, initializeChannel])
+  }, [handleEvent, initializeChannel, channelManager])
 
   useEffect(() => {
     if (typeof window === 'undefined' || !isInitializedRef.current) return
@@ -145,15 +244,17 @@ export function useMultiTabSync() {
 
   useEffect(() => {
     return () => {
-      if (channelRef.current) {
-        try {
-          channelRef.current.close()
-        } catch (error) {
-          Logger.warn('Error closing BroadcastChannel:', error)
-        }
+      // Close the channel when the last component unmounts
+      if (channelManager.isReady()) {
+        channelManager.close()
+      }
+
+      // Clear navigation throttle timeout
+      if (navigationThrottleRef.current) {
+        clearTimeout(navigationThrottleRef.current)
       }
     }
-  }, [])
+  }, [channelManager])
 
   return {
     sendEvent,
@@ -229,18 +330,54 @@ export function useTabSync() {
   }
 }
 
+// Global flag to track manual navigation
+let isManualNavigating = false
+
 export function useRouteSync() {
   const { sendEvent } = useMultiTabSync()
   const pathname = usePathname()
   const router = useRouter()
+  const lastNavigationRef = useRef<{ route: string; timestamp: number } | null>(null)
 
   const navigateAndSync = useCallback(
     (route: string) => {
+      // Prevent duplicate navigation calls within a short time window
+      const now = Date.now()
+      const lastNav = lastNavigationRef.current
+
+      if (lastNav && lastNav.route === route && now - lastNav.timestamp < 500) {
+        Logger.warn('Preventing duplicate navigation to', route)
+        return
+      }
+
+      // Don't navigate if we're already on the target route
+      if (pathname === route) {
+        Logger.info('Already on route', route, '- skipping navigation')
+        return
+      }
+
+      lastNavigationRef.current = { route, timestamp: now }
+
+      // Set global flag to prevent automatic navigation
+      isManualNavigating = true
+
+      Logger.info('Navigating to', route, 'from', pathname)
       router.push(route)
-      sendEvent({ type: 'ROUTE_CHANGE', route, timestamp: Date.now() })
+
+      // Send sync event with a small delay to prevent race conditions
+      setTimeout(() => {
+        sendEvent({ type: 'ROUTE_CHANGE', route, timestamp: now })
+        // Clear flag after navigation completes
+        setTimeout(() => {
+          isManualNavigating = false
+        }, 200)
+      }, 50)
     },
-    [router, sendEvent]
+    [router, sendEvent, pathname]
   )
 
   return { navigateAndSync, currentRoute: pathname }
 }
+
+// Export the flag so other hooks can check it
+export const isManuallyNavigating = () => isManualNavigating

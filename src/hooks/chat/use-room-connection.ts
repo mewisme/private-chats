@@ -1,31 +1,66 @@
 'use client'
 
 import { Room, leaveRoom, listenToRoom } from '@/lib/room'
-import { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { isManuallyNavigating, useRouteSync } from '@/hooks/use-multi-tab-sync'
+import { useCallback, useEffect, useState } from 'react'
 
 import { Logger } from '@/utils/logger'
 import { clearRoomTypingStatus } from '@/lib/typing'
 import { toast } from 'sonner'
 import { useCacheStore } from '@/hooks/use-cache-store'
+import { usePathname } from 'next/navigation'
 
 export function useRoomConnection(roomId: string) {
   const pathname = usePathname()
-  const router = useRouter()
   const [room, setRoom] = useState<Room | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const { navigateAndSync } = useRouteSync()
+
   const {
     clientId,
     roomId: cacheRoomId,
-    setSubRoom,
     clearCache,
-    initializeClientId
+    initializeClientId,
+    isCacheCleared,
+    updateIsCacheCleared
   } = useCacheStore()
 
   const isAI = pathname.startsWith('/chat/ai')
+
+  const handleRoomData = useCallback(
+    (roomData: Room | null) => {
+      try {
+        if (!roomData) {
+          if (isManuallyNavigating()) {
+            Logger.info('Manual navigation in progress, skipping automatic navigation')
+            return
+          }
+
+          if (cacheRoomId === roomId && !isCacheCleared) {
+            toast.info('The chat has ended')
+            updateIsCacheCleared()
+
+            setTimeout(() => {
+              if (!isManuallyNavigating()) {
+                navigateAndSync('/')
+                clearCache()
+              }
+            }, 100)
+          }
+          return
+        }
+        Logger.info('Room data:', roomData)
+        setRoom(roomData)
+        setIsConnected(roomData.status === 'active' && roomData.participants.length === 2)
+      } catch (error) {
+        Logger.error('Error handling room data:', error)
+      }
+    },
+    [roomId, cacheRoomId, isCacheCleared, updateIsCacheCleared, navigateAndSync, clearCache]
+  )
 
   useEffect(() => {
     try {
@@ -42,30 +77,14 @@ export function useRoomConnection(roomId: string) {
   useEffect(() => {
     if (!isInitialized || !clientId || isAI) return
 
-    try {
-      const unsubRoom = listenToRoom(roomId, (roomData) => {
-        try {
-          if (!roomData) {
-            Logger.log('Room deleted, clearing cache')
-            if (cacheRoomId === roomId) {
-              toast.info('The chat has ended')
-              clearCache()
-              router.push('/')
-            }
-            return
-          }
-          Logger.log('Room data:', roomData)
-          setRoom(roomData)
-          setIsConnected(roomData.status === 'active' && roomData.participants.length === 2)
-        } catch (error) {
-          Logger.error('Error handling room data:', error)
-        }
-      })
+    Logger.info('Setting up room listener for:', roomId)
 
-      setSubRoom(unsubRoom)
+    try {
+      const unsubRoom = listenToRoom(roomId, handleRoomData)
 
       return () => {
         try {
+          Logger.info('Cleaning up room listener for:', roomId)
           unsubRoom?.()
           if (clientId) {
             clearRoomTypingStatus(roomId, clientId).catch(Logger.error)
@@ -78,17 +97,7 @@ export function useRoomConnection(roomId: string) {
       Logger.error('Error setting up room connection:', error)
       setError('Failed to connect to chat')
     }
-  }, [
-    roomId,
-    router,
-    isAI,
-    clientId,
-    isInitialized,
-    cacheRoomId,
-    setSubRoom,
-    clearCache,
-    initializeClientId
-  ])
+  }, [roomId, clientId, isInitialized, isAI, handleRoomData])
 
   useEffect(() => {
     if (isAI) {

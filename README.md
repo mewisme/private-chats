@@ -264,7 +264,6 @@ Access settings via the gear icon (⚙️) in the header:
 
 - **AI Mode**: Toggle between AI and stranger chat
 - **Allow Markdown**: Enable markdown formatting in messages
-- **Allow Emoji**: Support for emoji in conversations
 - **Link Preview**: Show previews for shared links
 - **Theme**: Switch between light, dark, and system themes
 

@@ -73,15 +73,13 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     )
   }
 
-
-
   const handleSendMessageWithRef = () => handleSendMessage(inputRef)
   const handleKeyPressWithRef = (e: React.KeyboardEvent) => handleKeyPress(e, inputRef)
 
   return (
-    <div className="mt-10 flex min-h-screen items-center justify-center p-4 lg:mt-0">
+    <div className="flex min-h-[calc(100dvh-100px)] items-center justify-center px-4 py-2">
       <Card className="flex h-[600px] w-full max-w-2xl flex-col">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>
             <h1 className="text-lg font-semibold text-black dark:text-white">
               {isAI ? 'AI Assistant' : 'Anonymous Chat'}
@@ -119,7 +117,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
           <div ref={messagesEndRef} />
         </CardContent>
 
-        <CardContent className="pt-4">
+        <CardContent className="pt-2">
           <ChatInput
             inputRef={inputRef}
             isConnected={isConnected}

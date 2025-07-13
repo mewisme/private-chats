@@ -9,7 +9,6 @@ import {
   DialogPanel,
   DialogTitle
 } from '../animate-ui/headless/dialog'
-import { usePathname, useRouter } from 'next/navigation'
 
 import { Button } from '../ui/button'
 import { LogOut } from 'lucide-react'
@@ -18,6 +17,7 @@ import { leaveRoom } from '@/lib/room'
 import { toast } from 'sonner'
 import { useCacheStore } from '@/hooks/use-cache-store'
 import { useIsClient } from '@/hooks/use-client'
+import { usePathname } from 'next/navigation'
 import { useRouteSync } from '@/hooks/use-multi-tab-sync'
 import { useSettings } from '@/hooks/use-settings'
 import { useState } from 'react'
@@ -29,7 +29,6 @@ interface ChatLeaveButtonProps {
 
 export function ChatLeaveButton({ onLeaveAI, onLeave }: ChatLeaveButtonProps) {
   const isClient = useIsClient()
-  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
   const { clientId, roomId, clearCache } = useCacheStore()

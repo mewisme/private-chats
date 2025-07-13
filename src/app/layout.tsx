@@ -6,6 +6,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { ErrorBoundary } from '@/components/providers/error-boundary'
 import { Header } from '@/components/common/app-header'
 import { Inter } from 'next/font/google'
+import { PageTransition } from '@/components/common/page-transition'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/utils'
@@ -84,7 +85,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(inter.className, 'relative h-dvh')}>
+      <body className={cn(inter.className, 'min-h-dvh')}>
         <ErrorBoundary>
           <ThemeProvider
             attribute="class"
@@ -93,7 +94,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             disableTransitionOnChange
           >
             <Header />
-            <div className="h-dvh w-full">{children}</div>
+            <PageTransition className="w-full">
+              {children}
+            </PageTransition>
             <Toaster />
             <Analytics />
           </ThemeProvider>

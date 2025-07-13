@@ -5,14 +5,12 @@ import { create } from 'zustand'
 
 export type Settings = {
   allowMarkdown: boolean
-  allowEmoji: boolean
   linkPreview: boolean
   aiMode: boolean
 }
 
 const DEFAULT_SETTINGS: Settings = {
   allowMarkdown: false,
-  allowEmoji: false,
   linkPreview: false,
   aiMode: false
 }
@@ -47,7 +45,7 @@ const broadcastSettingsChange = (settings: Settings) => {
 const persistOptions: PersistOptions<SettingsState, Partial<SettingsState>> = {
   name: 'app_settings',
   partialize: (state) => ({ settings: state.settings, isHydrated: state.isHydrated }),
-  skipHydration: true, // Always skip hydration to prevent mismatches
+  skipHydration: true,
   onRehydrateStorage: () => (state) => {
     if (state) {
       state.setHydrated()

@@ -20,8 +20,6 @@ const broadcastCacheChange = (cacheData: Partial<CacheState>) => {
   }
 }
 
-type Callback = () => void
-
 type Message = {
   role: 'user' | 'assistant'
   content: string
@@ -30,8 +28,6 @@ type Message = {
 interface CacheState {
   clientId: string
   roomId: string | null
-  subRoom: Callback | null
-  subMessage: Callback | null
 
   messages: { clientId: string; messages: Message[] }[]
 
@@ -39,12 +35,14 @@ interface CacheState {
   tabId: string
   lastSyncTimestamp: number
 
+  isCacheCleared: boolean
+
   setRoomId: (id: string) => void
   setClientId: (id: string) => void
-  setSubRoom: (cb: Callback) => void
-  setSubMessage: (cb: Callback) => void
   clearCache: () => void
   initializeClientId: () => void
+
+  updateIsCacheCleared: () => void
 
   setMessages: (clientId: string, messages: Message[]) => void
 
@@ -56,7 +54,7 @@ interface CacheState {
 }
 
 export const useCacheStore = create<CacheState>((set, get) => ({
-  clientId: '', // Initialize empty to prevent hydration mismatch
+  clientId: '',
   roomId: null,
   subRoom: null,
   subMessage: null,
@@ -67,6 +65,8 @@ export const useCacheStore = create<CacheState>((set, get) => ({
   tabId: typeof window !== 'undefined' ? uuidv4() : '',
   lastSyncTimestamp: 0,
 
+  isCacheCleared: true,
+
   setClientId: (id) => {
     set({ clientId: id })
     broadcastCacheChange({ clientId: id })
@@ -76,9 +76,6 @@ export const useCacheStore = create<CacheState>((set, get) => ({
     set({ roomId: id })
     broadcastCacheChange({ roomId: id })
   },
-
-  setSubRoom: (cb) => set({ subRoom: cb }),
-  setSubMessage: (cb) => set({ subMessage: cb }),
 
   initializeClientId: () => {
     const currentClientId = get().clientId
@@ -97,12 +94,22 @@ export const useCacheStore = create<CacheState>((set, get) => ({
     Logger.info('CacheStore - clearCache called')
     const clearedState = {
       clientId: typeof window !== 'undefined' ? uuidv4() : '',
-      roomId: null,
-      subRoom: null,
-      subMessage: null
+      roomId: null
     }
     set(clearedState)
     broadcastCacheChange(clearedState)
+  },
+
+  updateIsCacheCleared: () => {
+    const clientId = get().clientId
+    const roomId = get().roomId
+    if (!clientId && !roomId) {
+      set({ isCacheCleared: true })
+      broadcastCacheChange({ isCacheCleared: true })
+    } else {
+      set({ isCacheCleared: false })
+      broadcastCacheChange({ isCacheCleared: false })
+    }
   },
 
   setMessages: (clientId, messages) => {

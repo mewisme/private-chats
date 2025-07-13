@@ -53,7 +53,7 @@ export function useChatNotifications(messages: Message[], clientId: string) {
       document.title = originalTitleRef.current
     }
 
-    const handleBlur = () => { }
+    const handleBlur = () => {}
 
     window.addEventListener('focus', handleFocus)
     window.addEventListener('blur', handleBlur)

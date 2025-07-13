@@ -31,10 +31,6 @@ export function SettingsDialog() {
       label: 'Allow markdown'
     },
     {
-      id: 'allowEmoji',
-      label: 'Allow emoji'
-    },
-    {
       id: 'linkPreview',
       label: 'Show link preview'
     },

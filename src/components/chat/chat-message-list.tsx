@@ -1,11 +1,10 @@
 'use client'
 
-import { useCacheStore } from '@/hooks/use-cache-store'
-import { Message } from '@/lib/message'
-import { cn } from '@/utils'
-
 import { ChatMessage } from './chat-message'
+import { Message } from '@/lib/message'
 import { TypingIndicator } from './typing-indicator'
+import { cn } from '@/utils'
+import { useCacheStore } from '@/hooks/use-cache-store'
 
 interface ChatMessageListProps {
   messages: Message[]
@@ -35,14 +34,12 @@ export function ChatMessageList({
         )
       })}
 
-      {/* Show typing indicator for stranger chat */}
       {isTyping && (
         <div className="mt-2">
           <TypingIndicator isAI={false} />
         </div>
       )}
 
-      {/* Show thinking indicator for AI chat */}
       {isAIThinking && (
         <div className="mt-2">
           <TypingIndicator isAI={true} />

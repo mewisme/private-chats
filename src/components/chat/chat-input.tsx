@@ -5,11 +5,9 @@ import { clearRoomTypingStatus, updateRoomTypingStatus } from '@/lib/typing'
 
 import { Button } from '@/components/ui/button'
 import { ChatEmoji } from './chat-emoji'
-import { Logger } from '@/utils/logger'
 import { Send } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { useCacheStore } from '@/hooks/use-cache-store'
-import { useHydratedSettings } from '@/hooks/use-settings'
 import { useIsClient } from '@/hooks/use-client'
 
 interface ChatInputProps {
@@ -36,7 +34,6 @@ export function ChatInput({
   isAI = false
 }: ChatInputProps) {
   const isClient = useIsClient()
-  const { settings } = useHydratedSettings()
   const { clientId } = useCacheStore()
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isTypingRef = useRef(false)
@@ -114,10 +111,6 @@ export function ChatInput({
     }
   }, [roomId, clientId, isAI])
 
-  useEffect(() => {
-    Logger.log('allowEmoji changed:', settings.allowEmoji)
-  }, [settings.allowEmoji])
-
   if (!isClient) {
     return null
   }
@@ -134,14 +127,13 @@ export function ChatInput({
           disabled={!isConnected || isSending}
           className="flex-1"
         />
-        {settings.allowEmoji && (
-          <ChatEmoji setEmoji={(emoji) => setNewMessage(newMessage + emoji)} />
-        )}
+        <ChatEmoji setEmoji={(emoji) => setNewMessage(newMessage + emoji)} />
         <Button
           onClick={enhancedHandleSendMessage}
           disabled={!newMessage.trim() || !isConnected || isSending}
           size={'icon'}
           variant={'ghost'}
+          className="transition-all duration-300"
         >
           <Send />
         </Button>

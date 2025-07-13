@@ -2,7 +2,7 @@
   "private": true,
   "name": "private-chats",
   "description": "Real-time anonymous 1-on-1 chat app using Next.js 15, Firebase, Tailwind CSS, and Zustand.",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "author": {
     "name": "Nguyen Mau Minh",
     "email": "mew@mewis.me",
@@ -46,6 +46,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^11.10.0",
+    "framer-motion": "^12.23.3",
     "frimousse": "^0.2.0",
     "lucide-react": "^0.518.0",
     "motion": "^12.23.0",
