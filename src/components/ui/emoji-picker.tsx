@@ -1,10 +1,10 @@
 'use client'
 
 import {
+  EmojiPicker as EmojiPickerPrimitive,
   type EmojiPickerListCategoryHeaderProps,
   type EmojiPickerListEmojiProps,
-  type EmojiPickerListRowProps,
-  EmojiPicker as EmojiPickerPrimitive
+  type EmojiPickerListRowProps
 } from 'frimousse'
 import { LoaderIcon, SearchIcon } from 'lucide-react'
 import type * as React from 'react'
@@ -146,4 +146,4 @@ function EmojiPickerFooter({ className, ...props }: React.ComponentProps<'div'>)
   )
 }
 
-export { EmojiPicker, EmojiPickerSearch, EmojiPickerContent, EmojiPickerFooter }
+export { EmojiPicker, EmojiPickerContent, EmojiPickerFooter, EmojiPickerSearch }

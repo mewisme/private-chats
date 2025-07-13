@@ -1,9 +1,11 @@
-import { Button } from '../ui/button'
 import { Github } from 'lucide-react'
 import Link from 'next/link'
-import { Logo } from '../base/logo'
-import { SettingsDialog } from './settings/settings-dialog'
+
 import { ThemeToggle } from '@/components/common/theme-toggle'
+
+import { Logo } from '../base/logo'
+import { Button } from '../ui/button'
+import { SettingsDialog } from './settings/settings-dialog'
 
 export function Header() {
   return (

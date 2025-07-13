@@ -1,10 +1,11 @@
 'use client'
 
-import { ChatMessage } from './chat-message'
-import { Message } from '@/lib/message'
-import { TypingIndicator } from './typing-indicator'
-import { cn } from '@/utils'
 import { useCacheStore } from '@/hooks/use-cache-store'
+import { Message } from '@/lib/message'
+import { cn } from '@/utils'
+
+import { ChatMessage } from './chat-message'
+import { TypingIndicator } from './typing-indicator'
 
 interface ChatMessageListProps {
   messages: Message[]

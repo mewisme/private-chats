@@ -1,17 +1,17 @@
 'use client'
 
 import { BotMessageSquare, MessageCircle, Users } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-
-import { Button } from '@/components/ui/button'
-import { LoadingPage } from '@/components/common/loading-page'
-import { findOrCreateRoom } from '@/lib/room'
 import { toast } from 'sonner'
+
+import { Loading } from '@/components/common/loading'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useCacheStore } from '@/hooks/use-cache-store'
 import { useIsClient } from '@/hooks/use-client'
-import { useRouter } from 'next/navigation'
 import { useSettings } from '@/hooks/use-settings'
+import { findOrCreateRoom } from '@/lib/room'
 
 export default function FindStranger() {
   const isClient = useIsClient()
@@ -33,7 +33,7 @@ export default function FindStranger() {
   }, [initializeClientId])
 
   if (!isClient) {
-    return <LoadingPage isChild />
+    return <Loading />
   }
 
   const handleFindStranger = async () => {
@@ -58,11 +58,11 @@ export default function FindStranger() {
 
   const handleWithAI = async () => {
     toast.success('Starting chat with AI...')
-    router.push(`/chat/ai`)
+    router.push('/chat/ai')
   }
 
   if (!isInitialized) {
-    return <LoadingPage />
+    return <Loading />
   }
 
   if (error) {

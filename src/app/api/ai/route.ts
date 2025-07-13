@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getChatMessages, setChatMessage } from '@/utils/ai-chat'
-
 import OpenAI from 'openai'
+
+import { getChatMessages, setChatMessage } from '@/utils/ai-chat'
 
 const openai = new OpenAI({
   apiKey: process.env.GEMINI_API_KEY,

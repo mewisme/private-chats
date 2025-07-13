@@ -2,7 +2,7 @@
 
 import { Checkbox } from '@/components/animate-ui/base/checkbox'
 import { Label } from '@/components/ui/label'
-import { useSettings, type Settings } from '@/hooks/use-settings'
+import { type Settings, useSettings } from '@/hooks/use-settings'
 
 interface SettingItemProps {
   id: keyof Settings

@@ -1,6 +1,9 @@
 'use client'
 
 import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
+
 import {
   Dialog,
   DialogBackdrop,
@@ -10,10 +13,7 @@ import {
   DialogPanel,
   DialogTitle
 } from '@/components/animate-ui/headless/dialog'
-import React, { useState } from 'react'
-
 import { Button } from '@/components/ui/button'
-import { useRouter } from 'next/navigation'
 
 interface ErrorBoundaryState {
   hasError: boolean
@@ -97,7 +97,7 @@ function DefaultErrorFallback({ error, resetError }: { error?: Error; resetError
             <RefreshCw className="mr-2 h-4 w-4" />
             Try Again
           </Button>
-          <Button variant="outline" onClick={handleGoHome} className="flex-1">
+          <Button variant="outline" onClick={handleGoHome}>
             Go Home
           </Button>
         </DialogFooter>

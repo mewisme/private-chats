@@ -1,8 +1,8 @@
 'use client'
 
-import * as React from 'react'
 import { Popover as PopoverPrimitive } from '@base-ui-components/react/popover'
 import { AnimatePresence, HTMLMotionProps, motion, type Transition } from 'motion/react'
+import * as React from 'react'
 
 import { cn } from '@/utils/index'
 
@@ -140,14 +140,14 @@ function PopoverContent({
 }
 
 export {
+  type Align,
   Popover,
-  PopoverTrigger,
   PopoverContent,
-  usePopover,
+  type PopoverContentProps,
   type PopoverContextType,
   type PopoverProps,
+  PopoverTrigger,
   type PopoverTriggerProps,
-  type PopoverContentProps,
   type Side,
-  type Align
+  usePopover
 }

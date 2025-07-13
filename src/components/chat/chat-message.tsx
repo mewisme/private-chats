@@ -1,10 +1,11 @@
 'use client'
 
-import { Markdown } from '../common/markdown/markdown'
-import { Message } from '@/lib/message'
 import { SimpleTooltip } from '@/components/common/simple-tooltip'
-import { cn } from '@/utils'
 import { useSettings } from '@/hooks/use-settings'
+import { Message } from '@/lib/message'
+import { cn } from '@/utils'
+
+import { Markdown } from '../common/markdown/markdown'
 
 interface ChatMessageProps {
   message: Message

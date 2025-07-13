@@ -1,22 +1,23 @@
 'use client'
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Message, listenToMessages, sendMessage } from '@/lib/message'
-import { Room, leaveRoom, listenToRoom } from '@/lib/room'
-import { clearRoomTypingStatus, listenToTypingStatus } from '@/lib/typing'
-import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { useCacheStore } from '@/hooks/use-cache-store'
+import { useIsClient } from '@/hooks/use-client'
+import { useNotifications } from '@/hooks/use-notifications'
+import { useHydratedSettings } from '@/hooks/use-settings'
+import { listenToMessages, Message, sendMessage } from '@/lib/message'
+import { leaveRoom, listenToRoom, Room } from '@/lib/room'
+import { clearRoomTypingStatus, listenToTypingStatus } from '@/lib/typing'
+import { cn } from '@/utils'
+
+import { Loading } from '../common/loading'
 import { ChatInput } from './chat-input'
 import { ChatLeaveButton } from './chat-leave'
 import { ChatMessageList } from './chat-message-list'
-import { LoadingPage } from '../common/loading-page'
-import { cn } from '@/utils'
-import { toast } from 'sonner'
-import { useCacheStore } from '@/hooks/use-cache-store'
-import { useHydratedSettings } from '@/hooks/use-settings'
-import { useIsClient } from '@/hooks/use-client'
-import { useNotifications } from '@/hooks/use-notifications'
 
 interface ChatRoomProps {
   roomId: string
@@ -265,7 +266,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
   }, [roomId, clientId, isAI])
 
   if (!isClient) {
-    return <LoadingPage />
+    return <Loading />
   }
 
   const sendAIMessage = async (userMessage: string) => {

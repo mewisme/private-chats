@@ -1,15 +1,16 @@
 'use client'
 
+import { Send } from 'lucide-react'
 import { RefObject, useCallback, useEffect, useRef } from 'react'
-import { clearRoomTypingStatus, updateRoomTypingStatus } from '@/lib/typing'
 
 import { Button } from '@/components/ui/button'
-import { ChatEmoji } from './chat-emoji'
-import { Send } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { useCacheStore } from '@/hooks/use-cache-store'
-import { useHydratedSettings } from '@/hooks/use-settings'
 import { useIsClient } from '@/hooks/use-client'
+import { useHydratedSettings } from '@/hooks/use-settings'
+import { clearRoomTypingStatus, updateRoomTypingStatus } from '@/lib/typing'
+
+import { ChatEmoji } from './chat-emoji'
 
 interface ChatInputProps {
   inputRef: RefObject<HTMLTextAreaElement | null>

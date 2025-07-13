@@ -1,8 +1,8 @@
 'use client'
 
-import * as React from 'react'
 import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox'
 import { type HTMLMotionProps, motion } from 'motion/react'
+import * as React from 'react'
 
 import { cn } from '@/utils/index'
 

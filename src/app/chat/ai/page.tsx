@@ -1,11 +1,12 @@
 'use client'
 
-import { LoadingPage } from '@/components/common/loading-page'
 import dynamic from 'next/dynamic'
+
+import { Loading } from '@/components/common/loading'
 
 const ChatRoom = dynamic(() => import('@/components/chat/chat-room'), {
   ssr: false,
-  loading: () => <LoadingPage />
+  loading: () => <Loading />
 })
 
 export default function AIChatPage() {

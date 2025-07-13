@@ -1,5 +1,15 @@
 'use client'
 
+import { LogOut } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { toast } from 'sonner'
+
+import { useCacheStore } from '@/hooks/use-cache-store'
+import { useIsClient } from '@/hooks/use-client'
+import { useSettings } from '@/hooks/use-settings'
+import { leaveRoom } from '@/lib/room'
+
 import {
   Dialog,
   DialogBackdrop,
@@ -9,17 +19,8 @@ import {
   DialogPanel,
   DialogTitle
 } from '../animate-ui/headless/dialog'
-import { usePathname, useRouter } from 'next/navigation'
-
-import { Button } from '../ui/button'
-import { LogOut } from 'lucide-react'
 import { SimpleTooltip } from '../common/simple-tooltip'
-import { leaveRoom } from '@/lib/room'
-import { toast } from 'sonner'
-import { useCacheStore } from '@/hooks/use-cache-store'
-import { useIsClient } from '@/hooks/use-client'
-import { useSettings } from '@/hooks/use-settings'
-import { useState } from 'react'
+import { Button } from '../ui/button'
 
 interface ChatLeaveButtonProps {
   onLeave?: () => void

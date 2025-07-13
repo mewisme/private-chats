@@ -1,17 +1,16 @@
 'use client'
 
+import { Smile } from 'lucide-react'
 import * as React from 'react'
 
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/animate-ui/base/popover'
+import { Button } from '@/components/ui/button'
 import {
   EmojiPicker,
   EmojiPickerContent,
   EmojiPickerFooter,
   EmojiPickerSearch
 } from '@/components/ui/emoji-picker'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/animate-ui/base/popover'
-
-import { Button } from '@/components/ui/button'
-import { Smile } from 'lucide-react'
 
 interface ChatEmojiProps {
   setEmoji: (emoji: string) => void

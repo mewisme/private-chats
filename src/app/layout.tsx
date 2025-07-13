@@ -1,12 +1,12 @@
 import '@/styles/globals.css'
 
-import type { Metadata, Viewport } from 'next'
-
 import { Analytics } from '@vercel/analytics/next'
-import { ErrorBoundary } from '@/components/providers/error-boundary'
-import { Header } from '@/components/common/app-header'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+
 import { StarsBackground } from '@/components/animate-ui/backgrounds/stars'
+import { Header } from '@/components/common/app-header'
+import { ErrorBoundary } from '@/components/providers/error-boundary'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/utils'

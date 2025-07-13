@@ -1,5 +1,10 @@
 'use client'
 
+import { Settings2 } from 'lucide-react'
+import { useState } from 'react'
+
+import { type Settings } from '@/hooks/use-settings'
+
 import {
   Dialog,
   DialogBackdrop,
@@ -9,11 +14,7 @@ import {
   DialogPanel,
   DialogTitle
 } from '../../animate-ui/headless/dialog'
-
 import { Button } from '../../ui/button'
-import { Settings2 } from 'lucide-react'
-import { type Settings } from '@/hooks/use-settings'
-import { useState } from 'react'
 import { SettingItem } from './setting-item'
 
 interface SettingItem {

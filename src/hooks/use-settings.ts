@@ -1,6 +1,5 @@
-import { PersistOptions, persist } from 'zustand/middleware'
-
 import { create } from 'zustand'
+import { persist, PersistOptions } from 'zustand/middleware'
 
 export type Settings = {
   allowMarkdown: boolean

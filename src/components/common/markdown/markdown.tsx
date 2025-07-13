@@ -1,11 +1,13 @@
 'use client'
 
-import { LinkPreview } from './link-preview'
 import ReactMarkdown from 'react-markdown'
-import { autoLinkifyText } from '@/utils'
 import rehypeExternalLinks from 'rehype-external-links'
 import remarkGfm from 'remark-gfm'
+
 import { useSettings } from '@/hooks/use-settings'
+import { autoLinkifyText } from '@/utils'
+
+import { LinkPreview } from './link-preview'
 
 export function Markdown(props: React.ComponentProps<typeof ReactMarkdown>) {
   const { settings } = useSettings()
