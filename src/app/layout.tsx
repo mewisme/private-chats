@@ -94,9 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             disableTransitionOnChange
           >
             <Header />
-            <PageTransition className="w-full">
-              {children}
-            </PageTransition>
+            <PageTransition className="w-full">{children}</PageTransition>
             <Toaster />
             <Analytics />
           </ThemeProvider>

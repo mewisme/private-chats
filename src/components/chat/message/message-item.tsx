@@ -1,17 +1,17 @@
 'use client'
 
-import { Markdown } from '../common/markdown/markdown'
+import { Markdown } from '@/components/common/markdown'
 import { Message } from '@/lib/message'
 import { SimpleTooltip } from '@/components/common/simple-tooltip'
 import { cn } from '@/utils'
 import { useSettings } from '@/hooks/use-settings'
 
-interface ChatMessageProps {
+interface MessageItemProps {
   message: Message
   isOwn: boolean
 }
 
-export function ChatMessage({ message, isOwn }: ChatMessageProps) {
+export function MessageItem({ message, isOwn }: MessageItemProps) {
   const { settings } = useSettings()
 
   const renderMessage = () => {

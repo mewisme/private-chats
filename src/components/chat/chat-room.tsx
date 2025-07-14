@@ -21,8 +21,8 @@ import {
 import { Button } from '../ui/button'
 import { ChatInput } from './chat-input'
 import { ChatLeaveButton } from './chat-leave'
-import { ChatMessageList } from './chat-message-list'
 import { Loading } from '../common/loading'
+import { MessageList } from './message/message-list'
 import { cn } from '@/utils'
 import { useIsClient } from '@/hooks/use-client'
 
@@ -48,7 +48,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
 
   const { isOtherUserTyping } = useTypingIndicator(roomId, clientId, isAI)
   const { unreadCount } = useChatNotifications(messages, clientId)
-  const { inputRef, messagesEndRef } = useInputFocus(isConnected)
+  const { inputRef } = useInputFocus(isConnected)
 
   if (!isClient || !isInitialized) {
     return <Loading />
@@ -108,13 +108,12 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
               </p>
             </div>
           ) : (
-            <ChatMessageList
+            <MessageList
               messages={messages}
               isTyping={!isAI && isOtherUserTyping}
               isAIThinking={isAI && isAIThinking}
             />
           )}
-          <div ref={messagesEndRef} />
         </CardContent>
 
         <CardContent className="pt-2">
